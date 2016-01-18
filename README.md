@@ -28,6 +28,17 @@ installed.
 
 
 
+## Query syntax
+
+##### Example #1
+
+    fields=firstName,lastName,posts(title,createDate)
+
+##### Example #2
+
+    fields=firstName,lastName,posts(*)
+
+
 
 ## Usage
 
@@ -45,7 +56,7 @@ public class AccountModel {
     private String lastName;
     private String password;
     private List<AccountEmailModel> emails;
-    @PartialField("example.converts.JodaDateTimeConverter")
+    @PartialField(JodaDateTimeConverter.class)
     private DateTime createDate;
 
     /* ADD GETTER / SETTER METHODS HERE */
@@ -63,6 +74,26 @@ public class AccountEmailModel {
     private Boolean isDefault;
 
     /* ADD GETTER / SETTER METHODS HERE */
+}
+```
+
+
+### Joda DateTime converter
+
+```java
+public class JodaDateTimeConverter implements Converter<DateTime> {
+
+    private static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
+    @Override
+    public void convert(final String fieldName, final DateTime data, final ObjectNode node) {
+        node.put(fieldName, data.toString(JodaDateTimeConverter.DATETIME_FORMAT));
+    }
+
+    @Override
+    public void convert(final String fieldName, final DateTime data, final ArrayNode node) {
+        node.add(data.toString(JodaDateTimeConverter.DATETIME_FORMAT));
+    }
 }
 ```
 
