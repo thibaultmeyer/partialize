@@ -65,8 +65,8 @@ public class AccountModel {
 
 ```java
 @PartialFields(
-    allowedFields = {"uid", "emails", "isDefault"},
-    wildcardFields = {"emails", "isDefault"}
+    allowedFields = {"uid", "email", "isDefault"},
+    wildcardFields = {"email", "isDefault"}
 )
 public class AccountEmailModel {
     private UUID uid;
