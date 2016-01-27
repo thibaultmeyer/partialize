@@ -54,6 +54,22 @@ public class StaticTest {
     }
 
     /**
+     * @since 16.01
+     */
+    @Test
+    public void standardTest002() {
+        final MixedPojo mixedPojo = new MixedPojo();
+        final String fields = "number,42";
+        final Partialize partialize = new Partialize();
+        final ContainerNode result = partialize.buildPartialObject(fields, MixedPojo.class, mixedPojo);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.has("number"));
+        Assert.assertTrue(result.has("42"));
+        Assert.assertEquals(42, result.get("number").asInt());
+        Assert.assertEquals(42, result.get("42").asInt());
+    }
+
+    /**
      * StaticPojo.
      *
      * @author Thibault Meyer
@@ -65,6 +81,31 @@ public class StaticTest {
 
         public static String getBuildDate() {
             return "2016-01-10";
+        }
+    }
+
+    /**
+     * MixedPojo.
+     *
+     * @author Thibault Meyer
+     * @version 16.01
+     * @since 16.01
+     */
+    @PartialFields(allowedFields = {"number", "42"})
+    public static class MixedPojo {
+
+        private final int number;
+
+        public MixedPojo() {
+            this.number = 42;
+        }
+
+        public static int get42() {
+            return 42;
+        }
+
+        public int getNumber() {
+            return this.number;
         }
     }
 }
