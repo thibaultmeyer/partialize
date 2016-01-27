@@ -281,8 +281,8 @@ public class Partialize {
     private ObjectNode buildPartialObject(final int depth, String fields, final Class<?> clazz, final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
             if (clazz.isAnnotationPresent(PartialFields.class)) {
-                List<String> allowedFields = Arrays.asList(instance.getClass().getAnnotation(PartialFields.class).allowedFields());
-                List<String> wildCardFields = Arrays.asList(instance.getClass().getAnnotation(PartialFields.class).wildcardFields());
+                List<String> allowedFields = Arrays.asList(clazz.getAnnotation(PartialFields.class).allowedFields());
+                List<String> wildCardFields = Arrays.asList(clazz.getAnnotation(PartialFields.class).wildcardFields());
                 if (allowedFields.isEmpty()) {
                     allowedFields = new ArrayList<>();
                     for (final Method m : clazz.getDeclaredMethods()) {
