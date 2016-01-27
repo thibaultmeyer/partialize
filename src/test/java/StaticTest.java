@@ -57,8 +57,8 @@ public class StaticTest {
      * StaticPojo.
      *
      * @author Thibault Meyer
-     * @since 16.01
      * @version 16.10
+     * @since 16.01
      */
     @PartialFields(allowedFields = "buildDate")
     public static class StaticPojo {
