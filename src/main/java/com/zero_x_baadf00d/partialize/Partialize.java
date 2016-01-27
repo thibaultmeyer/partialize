@@ -108,6 +108,20 @@ public class Partialize {
      * Build a JSON object from data taken from the scanner and
      * the given class type and instance.
      *
+     * @param fields The field query to request
+     * @param clazz  The class of the object to render
+     * @return An instance of {@code ContainerNode}
+     * @see ContainerNode
+     * @since 16.01
+     */
+    public ContainerNode buildPartialObject(final String fields, final Class<?> clazz) {
+        return this.buildPartialObject(fields, clazz, null);
+    }
+
+    /**
+     * Build a JSON object from data taken from the scanner and
+     * the given class type and instance.
+     *
      * @param fields   The field query to request
      * @param clazz    The class of the object to render
      * @param instance The instance of the object to render

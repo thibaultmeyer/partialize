@@ -47,7 +47,7 @@ public class StaticTest {
     public void standardTest001() {
         final String fields = "buildDate";
         final Partialize partialize = new Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, StaticPojo.class, null);
+        final ContainerNode result = partialize.buildPartialObject(fields, StaticPojo.class);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("buildDate"));
         Assert.assertEquals("2016-01-10", result.get("buildDate").asText());
