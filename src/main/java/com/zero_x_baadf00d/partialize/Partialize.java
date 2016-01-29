@@ -27,8 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.zero_x_baadf00d.partialize.annotation.PartialField;
-import com.zero_x_baadf00d.partialize.annotation.PartialFields;
+import com.zero_x_baadf00d.partialize.annotation.PartializeConverter;
 import com.zero_x_baadf00d.partialize.converter.Converter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -90,7 +89,7 @@ public class Partialize {
      * @since 16.01
      */
     public Partialize() {
-        this(Partialize.DEFAULT_MAXIMUM_DEPTH);
+        this(com.zero_x_baadf00d.partialize.Partialize.DEFAULT_MAXIMUM_DEPTH);
     }
 
     /**
@@ -185,8 +184,8 @@ public class Partialize {
             }
         } else {
             try {
-                if (clazz.getDeclaredField(field).isAnnotationPresent(PartialField.class)) {
-                    final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartialField.class).value();
+                if (clazz.getDeclaredField(field).isAnnotationPresent(PartializeConverter.class)) {
+                    final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartializeConverter.class).value();
                     try {
                         final Converter converter = (Converter) convertClazz.newInstance();
                         converter.convert(field, object, partialArray);
@@ -247,8 +246,8 @@ public class Partialize {
             }
         } else {
             try {
-                if (clazz.getDeclaredField(field).isAnnotationPresent(PartialField.class)) {
-                    final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartialField.class).value();
+                if (clazz.getDeclaredField(field).isAnnotationPresent(PartializeConverter.class)) {
+                    final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartializeConverter.class).value();
                     try {
                         final Converter converter = (Converter) convertClazz.newInstance();
                         converter.convert(field, object, partialObject);
@@ -294,9 +293,9 @@ public class Partialize {
      */
     private ObjectNode buildPartialObject(final int depth, String fields, final Class<?> clazz, final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
-            if (clazz.isAnnotationPresent(PartialFields.class)) {
-                List<String> allowedFields = Arrays.asList(clazz.getAnnotation(PartialFields.class).allowedFields());
-                List<String> wildCardFields = Arrays.asList(clazz.getAnnotation(PartialFields.class).wildcardFields());
+            if (clazz.isAnnotationPresent(com.zero_x_baadf00d.partialize.annotation.Partialize.class)) {
+                List<String> allowedFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).allowedFields());
+                List<String> wildCardFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).wildcardFields());
                 if (allowedFields.isEmpty()) {
                     allowedFields = new ArrayList<>();
                     for (final Method m : clazz.getDeclaredMethods()) {
@@ -316,14 +315,14 @@ public class Partialize {
                 }
 
                 Scanner scanner = new Scanner(fields);
-                scanner.useDelimiter(Partialize.SCANNER_DELIMITER);
+                scanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                 while (scanner.hasNext()) {
                     String word = scanner.next();
                     String args = null;
                     if (word.compareTo("*") == 0) {
                         scanner.close();
                         scanner = new Scanner(wildCardFields.stream().collect(Collectors.joining(",")));
-                        scanner.useDelimiter(Partialize.SCANNER_DELIMITER);
+                        scanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                     }
                     if (word.contains("(")) {
                         while (scanner.hasNext() && (StringUtils.countMatches(word, "(") != StringUtils.countMatches(word, ")"))) {

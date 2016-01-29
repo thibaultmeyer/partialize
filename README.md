@@ -46,7 +46,7 @@ installed.
 ### Objects to render as JSON
 
 ```java
-@PartialFields(
+@Partialize(
     allowedFields = {"uid", "firstName", "lastName", "emails", "createDate"},
     wildcardFields = {"uid", "firstName", "lastName"}
 )
@@ -56,7 +56,7 @@ public class AccountModel {
     private String lastName;
     private String password;
     private List<AccountEmailModel> emails;
-    @PartialField(JodaDateTimeConverter.class)
+    @PartializeConverter(JodaDateTimeConverter.class)
     private DateTime createDate;
 
     /* ADD GETTER / SETTER METHODS HERE */
@@ -64,7 +64,7 @@ public class AccountModel {
 ```
 
 ```java
-@PartialFields(
+@Partialize(
     allowedFields = {"uid", "email", "isDefault"},
     wildcardFields = {"email", "isDefault"}
 )

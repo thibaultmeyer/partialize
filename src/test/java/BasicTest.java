@@ -23,8 +23,7 @@
  */
 
 import com.fasterxml.jackson.databind.node.ContainerNode;
-import com.zero_x_baadf00d.partialize.Partialize;
-import com.zero_x_baadf00d.partialize.annotation.PartialFields;
+import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -90,7 +89,7 @@ public class BasicTest {
     public void basicTest001() {
         this.initializePojo();
         final String fields = "firstName,lastName,emails(uid)";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
 
         Assert.assertNotNull(result);
@@ -109,7 +108,7 @@ public class BasicTest {
     public void basicTest002() {
         this.initializePojo();
         final String fields = "*";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
 
         Assert.assertNotNull(result);
@@ -127,7 +126,7 @@ public class BasicTest {
     public void basicTest003() {
         this.initializePojo();
         final String fields = "emails(*),firstName";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
 
         Assert.assertNotNull(result);
@@ -148,7 +147,7 @@ public class BasicTest {
     public void basicTest004() {
         this.initializePojo();
         final String fields = "emails(uid,email),*";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
 
         Assert.assertNotNull(result);
@@ -170,7 +169,7 @@ public class BasicTest {
      * @version 16.01
      * @since 16.01
      */
-    @PartialFields(
+    @Partialize(
             allowedFields = {"uid", "email", "isDefault"},
             wildcardFields = "uid"
     )
@@ -221,7 +220,7 @@ public class BasicTest {
      * @version 16.01
      * @since 16.01
      */
-    @PartialFields(
+    @Partialize(
             allowedFields = {"uid", "firstName", "lastName", "emails"},
             wildcardFields = {"uid", "firstName", "lastName"}
     )

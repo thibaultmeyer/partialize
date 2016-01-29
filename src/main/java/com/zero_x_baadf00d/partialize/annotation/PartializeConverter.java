@@ -38,7 +38,7 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PartialField {
+public @interface PartializeConverter {
 
     /**
      * The converted to apply on the field value.

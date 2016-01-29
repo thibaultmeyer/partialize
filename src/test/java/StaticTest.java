@@ -23,8 +23,7 @@
  */
 
 import com.fasterxml.jackson.databind.node.ContainerNode;
-import com.zero_x_baadf00d.partialize.Partialize;
-import com.zero_x_baadf00d.partialize.annotation.PartialFields;
+import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -46,7 +45,7 @@ public class StaticTest {
     @Test
     public void standardTest001() {
         final String fields = "buildDate";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, StaticPojo.class);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("buildDate"));
@@ -60,7 +59,7 @@ public class StaticTest {
     public void standardTest002() {
         final MixedPojo mixedPojo = new MixedPojo();
         final String fields = "number,42";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, MixedPojo.class, mixedPojo);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("number"));
@@ -76,7 +75,7 @@ public class StaticTest {
      * @version 16.10
      * @since 16.01
      */
-    @PartialFields(allowedFields = "buildDate")
+    @Partialize(allowedFields = "buildDate")
     public static class StaticPojo {
 
         public static String getBuildDate() {
@@ -91,7 +90,7 @@ public class StaticTest {
      * @version 16.01
      * @since 16.01
      */
-    @PartialFields(allowedFields = {"number", "42"})
+    @Partialize(allowedFields = {"number", "42"})
     public static class MixedPojo {
 
         private final int number;

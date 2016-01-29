@@ -35,7 +35,7 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PartialFields {
+public @interface Partialize {
 
     /**
      * Allowed field names.
@@ -47,7 +47,7 @@ public @interface PartialFields {
 
     /**
      * Field names used to replace wildcard. If array is empty, data
-     * from PartialFields#allowedFields will be used.
+     * from Partialize#allowedFields will be used.
      *
      * @return An array of default field names
      * @since 16.01

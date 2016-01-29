@@ -25,9 +25,8 @@
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.zero_x_baadf00d.partialize.Partialize;
-import com.zero_x_baadf00d.partialize.annotation.PartialField;
-import com.zero_x_baadf00d.partialize.annotation.PartialFields;
+import com.zero_x_baadf00d.partialize.annotation.Partialize;
+import com.zero_x_baadf00d.partialize.annotation.PartializeConverter;
 import com.zero_x_baadf00d.partialize.converter.Converter;
 import org.joda.time.DateTime;
 import org.junit.Assert;
@@ -100,7 +99,7 @@ public class StandardTest {
     public void standardTest001() {
         this.initializePojo();
         final String fields = "displayName,amount,createDate";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
         Assert.assertNotNull(result);
         Assert.assertEquals("My bank account", result.get("displayName").asText());
@@ -116,7 +115,7 @@ public class StandardTest {
     public void standardTest002() {
         this.initializePojo();
         final String fields = "displayName,listOfList,createDate";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
         Assert.assertNotNull(result);
         Assert.assertEquals("My bank account", result.get("displayName").asText());
@@ -138,7 +137,7 @@ public class StandardTest {
     public void standardTest003() {
         this.initializePojo();
         final String fields = "attributes";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("attributes"));
@@ -156,7 +155,7 @@ public class StandardTest {
     public void standardTest004() {
         this.initializePojo();
         final String fields = "attributes(boolean,integer),displayName";
-        final Partialize partialize = new Partialize();
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("attributes"));
@@ -195,7 +194,7 @@ public class StandardTest {
      * @version 16.01
      * @since 16.01
      */
-    @PartialFields
+    @Partialize
     public static class BankAccountPojo {
 
         private String displayName;
@@ -203,7 +202,7 @@ public class StandardTest {
         private List<List<String>> listOfList;
         private Map<String, Object> attributes;
 
-        @PartialField(JodaDateTimeConverter.class)
+        @PartializeConverter(JodaDateTimeConverter.class)
         private DateTime createDate;
 
         public List<List<String>> getListOfList() {
