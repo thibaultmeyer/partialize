@@ -1,5 +1,7 @@
 # Partialize
 
+[![Join the chat at https://gitter.im/0xbaadf00d/partialize](https://badges.gitter.im/0xbaadf00d/partialize.svg)](https://gitter.im/0xbaadf00d/partialize?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 
 [![Latest release](https://img.shields.io/badge/latest_release-16.02-orange.svg)](https://github.com/0xbaadf00d/partialize/releases)
 [![Build](https://img.shields.io/travis-ci/0xbaadf00d/partialize.svg?branch=master&style=flat)](https://travis-ci.org/0xbaadf00d/partialize)
