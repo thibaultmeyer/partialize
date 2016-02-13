@@ -29,12 +29,14 @@ import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.zero_x_baadf00d.partialize.annotation.PartializeConverter;
 import com.zero_x_baadf00d.partialize.converter.Converter;
+import com.zero_x_baadf00d.partialize.policy.AccessPolicty;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -84,6 +86,13 @@ public class Partialize {
     private final int maximumDepth;
 
     /**
+     * The access policy function.
+     *
+     * @since 16.02
+     */
+    private Function<AccessPolicty, Boolean> accessPolicyFunction;
+
+    /**
      * Build a default instance.
      *
      * @since 16.01
@@ -101,6 +110,20 @@ public class Partialize {
     public Partialize(final int maximumDepth) {
         this.objectMapper = new ObjectMapper();
         this.maximumDepth = maximumDepth > 0 ? maximumDepth : 1;
+    }
+
+    /**
+     * Defines a method that will be called throughout the process
+     * to verify whether the requested element can be integrated or
+     * not to the partial JSON document.
+     *
+     * @param accessPolicyFunction The function to execute
+     * @return The current instance of {@code Partialize}
+     * @since 16.02
+     */
+    public Partialize setAccessSecurityPolicy(final Function<AccessPolicty, Boolean> accessPolicyFunction) {
+        this.accessPolicyFunction = accessPolicyFunction;
+        return this;
     }
 
     /**
@@ -336,6 +359,9 @@ public class Partialize {
                     }
                     final String field = word;
                     if (allowedFields.stream().anyMatch(f -> f.toLowerCase(Locale.ENGLISH).compareTo(field.toLowerCase(Locale.ENGLISH)) == 0)) {
+                        if (this.accessPolicyFunction != null && !this.accessPolicyFunction.apply(new AccessPolicty(clazz, instance, field))) {
+                            continue;
+                        }
                         try {
                             final Method method = clazz.getMethod("get" + WordUtils.capitalize(field));
                             final Object object = method.invoke(instance);
