@@ -117,12 +117,12 @@ public class Partialize {
      * to verify whether the requested element can be integrated or
      * not to the partial JSON document.
      *
-     * @param accessPolicyFunction The function to execute
+     * @param apFunction The function to execute
      * @return The current instance of {@code Partialize}
      * @since 16.02
      */
-    public Partialize setAccessSecurityPolicy(final Function<AccessPolicty, Boolean> accessPolicyFunction) {
-        this.accessPolicyFunction = accessPolicyFunction;
+    public Partialize setAccessSecurityPolicy(final Function<AccessPolicty, Boolean> apFunction) {
+        this.accessPolicyFunction = apFunction;
         return this;
     }
 
