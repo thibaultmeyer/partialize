@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.zero_x_baadf00d.partialize.annotation.PartializeConverter;
 import com.zero_x_baadf00d.partialize.converter.Converter;
-import com.zero_x_baadf00d.partialize.policy.AccessPolicty;
+import com.zero_x_baadf00d.partialize.policy.AccessPolicy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -90,7 +90,7 @@ public class Partialize {
      *
      * @since 16.02
      */
-    private Function<AccessPolicty, Boolean> accessPolicyFunction;
+    private Function<AccessPolicy, Boolean> accessPolicyFunction;
 
     /**
      * Build a default instance.
@@ -121,7 +121,7 @@ public class Partialize {
      * @return The current instance of {@code Partialize}
      * @since 16.02
      */
-    public Partialize setAccessSecurityPolicy(final Function<AccessPolicty, Boolean> apFunction) {
+    public Partialize setAccessPolicy(final Function<AccessPolicy, Boolean> apFunction) {
         this.accessPolicyFunction = apFunction;
         return this;
     }
@@ -323,7 +323,7 @@ public class Partialize {
                     allowedFields = new ArrayList<>();
                     for (final Method m : clazz.getDeclaredMethods()) {
                         final String methodName = m.getName();
-                        if (methodName.startsWith("get")) {
+                        if (methodName.startsWith("get") || methodName.startsWith("is") || methodName.startsWith("has")) {
                             final char[] c = methodName.substring(3).toCharArray();
                             c[0] = Character.toLowerCase(c[0]);
                             allowedFields.add(new String(c));
@@ -359,7 +359,7 @@ public class Partialize {
                     }
                     final String field = word;
                     if (allowedFields.stream().anyMatch(f -> f.toLowerCase(Locale.ENGLISH).compareTo(field.toLowerCase(Locale.ENGLISH)) == 0)) {
-                        if (this.accessPolicyFunction != null && !this.accessPolicyFunction.apply(new AccessPolicty(clazz, instance, field))) {
+                        if (this.accessPolicyFunction != null && !this.accessPolicyFunction.apply(new AccessPolicy(clazz, instance, field))) {
                             continue;
                         }
                         try {
@@ -367,6 +367,12 @@ public class Partialize {
                             final Object object = method.invoke(instance);
                             this.internalBuild(depth, field, args, partialObject, clazz, object);
                         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {
+                            try {
+                                final Method method = clazz.getMethod(field);
+                                final Object object = method.invoke(instance);
+                                this.internalBuild(depth, field, args, partialObject, clazz, object);
+                            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+                            }
                         }
                     }
                 }

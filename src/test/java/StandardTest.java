@@ -43,7 +43,7 @@ import java.util.Map;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.01
+ * @version 16.02
  * @since 16.01
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -168,6 +168,19 @@ public class StandardTest {
     }
 
     /**
+     * @since 16.02
+     */
+    @Test
+    public void standardTest005() {
+        this.initializePojo();
+        final String fields = "isActive";
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+        Assert.assertNotNull(result);
+        Assert.assertFalse(result.has("isActive"));
+    }
+
+    /**
      * JodaDateTimeConverter.
      *
      * @author Thibault Meyer
@@ -243,6 +256,10 @@ public class StandardTest {
 
         public void setCreateDate(DateTime createDate) {
             this.createDate = createDate;
+        }
+
+        public boolean isActive() {
+            return false;
         }
     }
 }

@@ -1,13 +1,13 @@
 package com.zero_x_baadf00d.partialize.policy;
 
 /**
- * AccessPolicty.
+ * AccessPolicy.
  *
  * @author Thibault Meyer
  * @version 16.02
  * @since 16.02
  */
-public class AccessPolicty {
+public class AccessPolicy {
 
     /**
      * The class type.
@@ -38,7 +38,7 @@ public class AccessPolicty {
      * @param method   The method that will be called
      * @since 16.02
      */
-    public AccessPolicty(final Class<?> clazz, final Object instance, final String method) {
+    public AccessPolicy(final Class<?> clazz, final Object instance, final String method) {
         this.clazz = clazz;
         this.instance = instance;
         this.method = method;
