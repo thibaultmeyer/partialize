@@ -323,8 +323,12 @@ public class Partialize {
                     allowedFields = new ArrayList<>();
                     for (final Method m : clazz.getDeclaredMethods()) {
                         final String methodName = m.getName();
-                        if (methodName.startsWith("get") || methodName.startsWith("is") || methodName.startsWith("has")) {
+                        if (methodName.startsWith("get") || methodName.startsWith("has")) {
                             final char[] c = methodName.substring(3).toCharArray();
+                            c[0] = Character.toLowerCase(c[0]);
+                            allowedFields.add(new String(c));
+                        } else if (methodName.startsWith("is")) {
+                            final char[] c = methodName.substring(2).toCharArray();
                             c[0] = Character.toLowerCase(c[0]);
                             allowedFields.add(new String(c));
                         }
