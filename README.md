@@ -2,6 +2,7 @@
 
 
 [![Latest release](https://img.shields.io/badge/latest_release-16.03-orange.svg)](https://github.com/0xbaadf00d/partialize/releases)
+[![JitPack](https://jitpack.io/v/0xbaadf00d/partialize.svg)](https://jitpack.io/#0xbaadf00d/partialize)
 [![Build](https://img.shields.io/travis-ci/0xbaadf00d/partialize.svg?branch=master&style=flat)](https://travis-ci.org/0xbaadf00d/partialize)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/0xbaadf00d/partialize/master/LICENSE)
 
@@ -128,6 +129,38 @@ System.out.println(result);
 }
 ```
 
+
+### Field aliases
+```java
+final AccountModel account = AccountModel.find().where().eq("id", 1).findUnique();
+
+final String fields = "alias1,alias2";
+final Partialize partialize = new Partialize();
+partialize.setAliases(new HashMap<String, String>() {{
+    put("alias1", "firstName");
+    put("alias2", "lastName");
+}});
+final ContainerNode result = partialize.buildPartialObject(fields, AccountModel.class, account);
+System.out.println(result);
+```
+
+
+### Access policies
+```java
+final AccountModel account = AccountModel.find().where().eq("id", 1).findUnique();
+
+final String fields = "uid,firstName,lastName,password";
+final Partialize partialize = new Partialize();
+partialize.setAccessPolicy(accessPolicy -> {
+    return Arrays.asList(
+        "AccountModel.uid",
+        "AccountModel.firstName",
+        "AccountModel.lastName"
+    ).contains(accessPolicy.clazz.getSimpleName() + "." + accessPolicy.method);
+});
+final ContainerNode result = partialize.buildPartialObject(fields, AccountModel.class, account);
+System.out.println(result);
+```
 
 
 
