@@ -49,7 +49,7 @@ public class AliasTest {
         final AliasPojo aliasPojo = new AliasPojo();
         final String fields = "number,myNumber";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        partialize.setAliases(new HashMap<String, String>(){{
+        partialize.setAliases(new HashMap<String, String>() {{
             put("MyNumber", "number");
         }});
         final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);

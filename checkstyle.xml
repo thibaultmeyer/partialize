@@ -40,7 +40,7 @@
             <property name="processJavadoc" value="true"/>
         </module>
         <module name="LineLength">
-            <property name="max" value="180"/>
+            <property name="max" value="195"/>
         </module>
         <module name="GenericWhitespace"/>
         <module name="EmptyForIteratorPad"/>

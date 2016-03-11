@@ -196,7 +196,8 @@ public class Partialize {
      * @param object       The object to add
      * @since 16.01.18
      */
-    private void internalBuild(final int depth, final String aliasField, final String field, final String args, final ArrayNode partialArray, final Class<?> clazz, final Object object) {
+    private void internalBuild(final int depth, final String aliasField, final String field, final String args,
+                               final ArrayNode partialArray, final Class<?> clazz, final Object object) {
         if (object == null) {
             partialArray.addNull();
         } else if (object instanceof String) {
@@ -257,7 +258,8 @@ public class Partialize {
      * @param object        The object to add
      * @since 16.01.18
      */
-    private void internalBuild(final int depth, final String aliasField, final String field, final String args, final ObjectNode partialObject, final Class<?> clazz, final Object object) {
+    private void internalBuild(final int depth, final String aliasField, final String field, final String args,
+                               final ObjectNode partialObject, final Class<?> clazz, final Object object) {
         if (object == null) {
             partialObject.putNull(field);
         } else if (object instanceof String) {
@@ -406,7 +408,15 @@ public class Partialize {
             } else if (instance instanceof Map<?, ?>) {
                 if (fields == null || fields.isEmpty()) {
                     for (Map.Entry<?, ?> e : ((Map<?, ?>) instance).entrySet()) {
-                        this.internalBuild(depth, String.valueOf(e.getKey()), String.valueOf(e.getKey()), null, partialObject, e.getValue() == null ? Object.class : e.getValue().getClass(), e.getValue());
+                        this.internalBuild(
+                                depth,
+                                String.valueOf(e.getKey()),
+                                String.valueOf(e.getKey()),
+                                null,
+                                partialObject,
+                                e.getValue() == null ? Object.class : e.getValue().getClass(),
+                                e.getValue()
+                        );
                     }
                 } else {
                     final Map<?, ?> tmpMap = (Map<?, ?>) instance;
