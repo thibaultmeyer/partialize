@@ -47,10 +47,11 @@ public class AliasTest {
     @Test
     public void aliasTest001() {
         final AliasPojo aliasPojo = new AliasPojo();
-        final String fields = "number,myNumber";
+        final String fields = "number,myNumber,secret";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         partialize.setAliases(new HashMap<String, String>() {{
-            put("MyNumber", "number");
+            put("myNumber", "number");
+            put("secret", "number");
         }});
         final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
         Assert.assertNotNull(result);
@@ -58,6 +59,8 @@ public class AliasTest {
         Assert.assertEquals(42, result.get("number").asInt());
         Assert.assertNotNull(result.get("myNumber"));
         Assert.assertEquals(42, result.get("myNumber").asInt());
+        Assert.assertNotNull(result.get("secret"));
+        Assert.assertEquals(42, result.get("secret").asInt());
     }
 
     /**
@@ -78,6 +81,10 @@ public class AliasTest {
 
         public int getNumber() {
             return this.number;
+        }
+
+        public int getSecret() {
+            return 23489;
         }
     }
 }

@@ -385,7 +385,7 @@ public class Partialize {
                         }
                     }
                     final String aliasField = word;
-                    final String field = this.aliases != null && this.aliases.containsKey(WordUtils.capitalize(aliasField)) ? this.aliases.get(WordUtils.capitalize(aliasField)) : aliasField;
+                    final String field = this.aliases != null && this.aliases.containsKey(aliasField) ? this.aliases.get(aliasField) : aliasField;
                     if (allowedFields.stream().anyMatch(f -> f.toLowerCase(Locale.ENGLISH).compareTo(field.toLowerCase(Locale.ENGLISH)) == 0)) {
                         if (this.accessPolicyFunction != null && !this.accessPolicyFunction.apply(new AccessPolicy(clazz, instance, field))) {
                             continue;
