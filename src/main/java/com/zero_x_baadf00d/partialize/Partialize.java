@@ -45,57 +45,64 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 16.01
- * @since 16.01
+ * @version 16.03.11
+ * @since 16.01.18
  */
 public class Partialize {
 
     /**
      * Default maximum reachable depth level.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     public static final int DEFAULT_MAXIMUM_DEPTH = 64;
 
     /**
      * Default scanner delimiter pattern.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     private static final String SCANNER_DELIMITER = ",";
 
     /**
      * Pattern used to extract arguments.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     private final Pattern fieldArgsPattern = Pattern.compile("([a-zA-Z0-9]{1,})\\((.+)\\)");
 
     /**
      * Object mapper used to create new object nodes.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     private final ObjectMapper objectMapper;
 
     /**
      * The maximum reachable depth level.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     private final int maximumDepth;
 
     /**
      * The access policy function.
      *
-     * @since 16.02
+     * @since 16.02.13
      */
     private Function<AccessPolicy, Boolean> accessPolicyFunction;
 
     /**
+     * Defined aliases.
+     *
+     * @since 16.03.11
+     */
+    private Map<String, String> aliases;
+
+    /**
      * Build a default instance.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     public Partialize() {
         this(com.zero_x_baadf00d.partialize.Partialize.DEFAULT_MAXIMUM_DEPTH);
@@ -105,7 +112,7 @@ public class Partialize {
      * Build an instance with a specific maximum depth value set.
      *
      * @param maximumDepth Maximum allowed depth value to set
-     * @since 16.01
+     * @since 16.01.18
      */
     public Partialize(final int maximumDepth) {
         this.objectMapper = new ObjectMapper();
@@ -119,10 +126,22 @@ public class Partialize {
      *
      * @param apFunction The function to execute
      * @return The current instance of {@code Partialize}
-     * @since 16.02
+     * @since 16.02.13
      */
     public Partialize setAccessPolicy(final Function<AccessPolicy, Boolean> apFunction) {
         this.accessPolicyFunction = apFunction;
+        return this;
+    }
+
+    /**
+     * Defines field aliases.
+     *
+     * @param aliases A {@code Map} defining aliases
+     * @return The current instance of {@code Partialize}
+     * @since 16.03.10
+     */
+    public Partialize setAliases(final Map<String, String> aliases) {
+        this.aliases = aliases;
         return this;
     }
 
@@ -134,7 +153,7 @@ public class Partialize {
      * @param clazz  The class of the object to render
      * @return An instance of {@code ContainerNode}
      * @see ContainerNode
-     * @since 16.01
+     * @since 16.01.18
      */
     public ContainerNode buildPartialObject(final String fields, final Class<?> clazz) {
         return this.buildPartialObject(fields, clazz, null);
@@ -149,7 +168,7 @@ public class Partialize {
      * @param instance The instance of the object to render
      * @return An instance of {@code ContainerNode}
      * @see ContainerNode
-     * @since 16.01
+     * @since 16.01.18
      */
     public ContainerNode buildPartialObject(final String fields, final Class<?> clazz, final Object instance) {
         if (instance instanceof Collection<?>) {
@@ -169,14 +188,15 @@ public class Partialize {
      * Add requested item on the partial JSON document.
      *
      * @param depth        Current depth level
+     * @param aliasField   The alias field name
      * @param field        The field name
      * @param args         The field Arguments
      * @param partialArray The current partial JSON document part
      * @param clazz        The class of the object to add
      * @param object       The object to add
-     * @since 16.01
+     * @since 16.01.18
      */
-    private void internalBuild(final int depth, final String field, final String args, final ArrayNode partialArray, final Class<?> clazz, final Object object) {
+    private void internalBuild(final int depth, final String aliasField, final String field, final String args, final ArrayNode partialArray, final Class<?> clazz, final Object object) {
         if (object == null) {
             partialArray.addNull();
         } else if (object instanceof String) {
@@ -195,7 +215,7 @@ public class Partialize {
             final ArrayNode anotherPartialArray = partialArray.addArray();
             if (((Collection<?>) object).size() > 0) {
                 for (final Object o : (Collection<?>) object) {
-                    this.internalBuild(depth, field, args, anotherPartialArray, o.getClass(), o);
+                    this.internalBuild(depth, aliasField, field, args, anotherPartialArray, o.getClass(), o);
                 }
             }
         } else if (object instanceof Enum) {
@@ -211,7 +231,7 @@ public class Partialize {
                     final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartializeConverter.class).value();
                     try {
                         final Converter converter = (Converter) convertClazz.newInstance();
-                        converter.convert(field, object, partialArray);
+                        converter.convert(aliasField, object, partialArray);
                     } catch (InstantiationException ex) {
                         ex.printStackTrace();
                         partialArray.add(object.toString());
@@ -229,33 +249,34 @@ public class Partialize {
      * Add requested item on the partial JSON document.
      *
      * @param depth         Current depth level
+     * @param aliasField    The alias field name
      * @param field         The field name
      * @param args          The field Arguments
      * @param partialObject The current partial JSON document part
      * @param clazz         The class of the object to add
      * @param object        The object to add
-     * @since 16.01
+     * @since 16.01.18
      */
-    private void internalBuild(final int depth, final String field, final String args, final ObjectNode partialObject, final Class<?> clazz, final Object object) {
+    private void internalBuild(final int depth, final String aliasField, final String field, final String args, final ObjectNode partialObject, final Class<?> clazz, final Object object) {
         if (object == null) {
             partialObject.putNull(field);
         } else if (object instanceof String) {
-            partialObject.put(field, (String) object);
+            partialObject.put(aliasField, (String) object);
         } else if (object instanceof Integer) {
-            partialObject.put(field, (Integer) object);
+            partialObject.put(aliasField, (Integer) object);
         } else if (object instanceof Long) {
-            partialObject.put(field, (Long) object);
+            partialObject.put(aliasField, (Long) object);
         } else if (object instanceof Double) {
-            partialObject.put(field, (Double) object);
+            partialObject.put(aliasField, (Double) object);
         } else if (object instanceof UUID) {
-            partialObject.put(field, object.toString());
+            partialObject.put(aliasField, object.toString());
         } else if (object instanceof Boolean) {
-            partialObject.put(field, (Boolean) object);
+            partialObject.put(aliasField, (Boolean) object);
         } else if (object instanceof Collection<?>) {
             final ArrayNode partialArray = partialObject.putArray(field);
             if (((Collection<?>) object).size() > 0) {
                 for (final Object o : (Collection<?>) object) {
-                    this.internalBuild(depth, field, args, partialArray, o.getClass(), o);
+                    this.internalBuild(depth, aliasField, field, args, partialArray, o.getClass(), o);
                 }
             }
         } else if (object instanceof Map<?, ?>) {
@@ -263,9 +284,9 @@ public class Partialize {
         } else if (object instanceof Enum) {
             final String tmp = object.toString();
             try {
-                partialObject.put(field, Integer.valueOf(tmp));
+                partialObject.put(aliasField, Integer.valueOf(tmp));
             } catch (NumberFormatException ignore) {
-                partialObject.put(field, tmp);
+                partialObject.put(aliasField, tmp);
             }
         } else {
             try {
@@ -273,10 +294,10 @@ public class Partialize {
                     final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartializeConverter.class).value();
                     try {
                         final Converter converter = (Converter) convertClazz.newInstance();
-                        converter.convert(field, object, partialObject);
+                        converter.convert(aliasField, object, partialObject);
                     } catch (InstantiationException ex) {
                         ex.printStackTrace();
-                        partialObject.put(field, object.toString());
+                        partialObject.put(aliasField, object.toString());
                     }
                 } else {
                     this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
@@ -296,7 +317,7 @@ public class Partialize {
      * @param clazz    The class of the object to render
      * @param instance The instance of the object to render
      * @return A JSON Object
-     * @since 16.01
+     * @since 16.01.18
      */
     private ObjectNode buildPartialObject(final int depth, final String fields, final Class<?> clazz, final Object instance) {
         return this.buildPartialObject(depth, fields, clazz, instance, this.objectMapper.createObjectNode());
@@ -312,7 +333,7 @@ public class Partialize {
      * @param instance      The instance of the object to render
      * @param partialObject The partial JSON document
      * @return A JSON Object
-     * @since 16.01
+     * @since 16.01.18
      */
     private ObjectNode buildPartialObject(final int depth, String fields, final Class<?> clazz, final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
@@ -361,7 +382,8 @@ public class Partialize {
                             args = m.group(2);
                         }
                     }
-                    final String field = word;
+                    final String aliasField = word;
+                    final String field = this.aliases != null && this.aliases.containsKey(WordUtils.capitalize(aliasField)) ? this.aliases.get(WordUtils.capitalize(aliasField)) : aliasField;
                     if (allowedFields.stream().anyMatch(f -> f.toLowerCase(Locale.ENGLISH).compareTo(field.toLowerCase(Locale.ENGLISH)) == 0)) {
                         if (this.accessPolicyFunction != null && !this.accessPolicyFunction.apply(new AccessPolicy(clazz, instance, field))) {
                             continue;
@@ -369,12 +391,12 @@ public class Partialize {
                         try {
                             final Method method = clazz.getMethod("get" + WordUtils.capitalize(field));
                             final Object object = method.invoke(instance);
-                            this.internalBuild(depth, field, args, partialObject, clazz, object);
+                            this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
                         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {
                             try {
                                 final Method method = clazz.getMethod(field);
                                 final Object object = method.invoke(instance);
-                                this.internalBuild(depth, field, args, partialObject, clazz, object);
+                                this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
                             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
                             }
                         }
@@ -384,13 +406,13 @@ public class Partialize {
             } else if (instance instanceof Map<?, ?>) {
                 if (fields == null || fields.isEmpty()) {
                     for (Map.Entry<?, ?> e : ((Map<?, ?>) instance).entrySet()) {
-                        this.internalBuild(depth, String.valueOf(e.getKey()), null, partialObject, e.getValue() == null ? Object.class : e.getValue().getClass(), e.getValue());
+                        this.internalBuild(depth, String.valueOf(e.getKey()), String.valueOf(e.getKey()), null, partialObject, e.getValue() == null ? Object.class : e.getValue().getClass(), e.getValue());
                     }
                 } else {
                     final Map<?, ?> tmpMap = (Map<?, ?>) instance;
                     for (final String k : fields.split(",")) {
                         final Object o = tmpMap.get(k);
-                        this.internalBuild(depth, k, null, partialObject, o == null ? Object.class : o.getClass(), o);
+                        this.internalBuild(depth, k, k, null, partialObject, o == null ? Object.class : o.getClass(), o);
                     }
                 }
             } else {

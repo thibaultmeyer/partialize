@@ -29,8 +29,8 @@ import java.lang.annotation.*;
  * Indicate that the decorated class can be processed by Partialize.
  *
  * @author Thibault Meyer
- * @version 16.01
- * @since 16.01
+ * @version 16.01.29
+ * @since 16.01.18
  */
 @Documented
 @Target({ElementType.TYPE})
@@ -41,7 +41,7 @@ public @interface Partialize {
      * Allowed field names.
      *
      * @return An array of allowed field names
-     * @since 16.01
+     * @since 16.01.18
      */
     String[] allowedFields() default {};
 
@@ -50,7 +50,7 @@ public @interface Partialize {
      * from Partialize#allowedFields will be used.
      *
      * @return An array of default field names
-     * @since 16.01
+     * @since 16.01.18
      */
     String[] wildcardFields() default {};
 }

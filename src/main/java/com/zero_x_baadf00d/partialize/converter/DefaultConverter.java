@@ -31,8 +31,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * representation of the given object.
  *
  * @author Thibault Meyer
- * @version 16.01
- * @since 16.01
+ * @version 16.01.18
+ * @since 16.01.18
  */
 public class DefaultConverter implements Converter<Object> {
 

@@ -43,8 +43,8 @@ import java.util.Map;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.02
- * @since 16.01
+ * @version 16.02.21
+ * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StandardTest {
@@ -52,21 +52,21 @@ public class StandardTest {
     /**
      * Handle to the object used on these tests.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     private BankAccountPojo bankAccount;
 
     /**
      * Current datetime.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     private DateTime currentDateTime;
 
     /**
      * Initialize data.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     private void initializePojo() {
         if (this.bankAccount == null) {
@@ -93,7 +93,7 @@ public class StandardTest {
     }
 
     /**
-     * @since 16.01
+     * @since 16.01.18
      */
     @Test
     public void standardTest001() {
@@ -109,7 +109,7 @@ public class StandardTest {
     }
 
     /**
-     * @since 16.01
+     * @since 16.01.18
      */
     @Test
     public void standardTest002() {
@@ -131,7 +131,7 @@ public class StandardTest {
     }
 
     /**
-     * @since 16.01
+     * @since 16.01.18
      */
     @Test
     public void standardTest003() {
@@ -149,7 +149,7 @@ public class StandardTest {
     }
 
     /**
-     * @since 16.01
+     * @since 16.01.18
      */
     @Test
     public void standardTest004() {
@@ -168,7 +168,7 @@ public class StandardTest {
     }
 
     /**
-     * @since 16.02
+     * @since 16.02.21
      */
     @Test
     public void standardTest005() {
@@ -184,8 +184,8 @@ public class StandardTest {
      * JodaDateTimeConverter.
      *
      * @author Thibault Meyer
-     * @version 16.01
-     * @since 16.01
+     * @version 16.01.18
+     * @since 16.01.18
      */
     public static class JodaDateTimeConverter implements Converter<DateTime> {
 
@@ -204,8 +204,8 @@ public class StandardTest {
      * BankAccountPojo.
      *
      * @author Thibault Meyer
-     * @version 16.01
-     * @since 16.01
+     * @version 16.01.18
+     * @since 16.01.18
      */
     @Partialize
     public static class BankAccountPojo {

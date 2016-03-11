@@ -37,8 +37,8 @@ import java.util.UUID;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.01
- * @since 16.01
+ * @version 16.01.29
+ * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BasicTest {
@@ -46,14 +46,14 @@ public class BasicTest {
     /**
      * Handle to the object used on these tests.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     private AccountPojo account;
 
     /**
      * Initialize data.
      *
-     * @since 16.01
+     * @since 16.01.18
      */
     private void initializePojo() {
         if (this.account == null) {
@@ -83,7 +83,7 @@ public class BasicTest {
     }
 
     /**
-     * @since 16.01
+     * @since 16.01.18
      */
     @Test
     public void basicTest001() {
@@ -102,7 +102,7 @@ public class BasicTest {
     }
 
     /**
-     * @since 16.01
+     * @since 16.01.18
      */
     @Test
     public void basicTest002() {
@@ -120,7 +120,7 @@ public class BasicTest {
     }
 
     /**
-     * @since 16.01
+     * @since 16.01.18
      */
     @Test
     public void basicTest003() {
@@ -141,7 +141,7 @@ public class BasicTest {
     }
 
     /**
-     * @since 16.01
+     * @since 16.01.18
      */
     @Test
     public void basicTest004() {
@@ -166,8 +166,8 @@ public class BasicTest {
      * EmailPojo.
      *
      * @author Thibault Meyer
-     * @version 16.01
-     * @since 16.01
+     * @version 16.01.18
+     * @since 16.01.18
      */
     @Partialize(
             allowedFields = {"uid", "email", "isDefault"},
@@ -217,8 +217,8 @@ public class BasicTest {
      * AccountPojo.
      *
      * @author Thibault Meyer
-     * @version 16.01
-     * @since 16.01
+     * @version 16.01.18
+     * @since 16.01.18
      */
     @Partialize(
             allowedFields = {"uid", "firstName", "lastName", "emails"},

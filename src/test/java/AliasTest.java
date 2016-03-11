@@ -29,78 +29,51 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import java.util.HashMap;
+
 /**
- * StaticTest.
+ * AliasTest.
  *
  * @author Thibault Meyer
- * @version 16.01.18
- * @since 16.01.18
+ * @version 16.03.10
+ * @since 16.03.10
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class StaticTest {
+public class AliasTest {
 
     /**
-     * @since 16.01.18
+     * @since 16.03.10
      */
     @Test
-    public void standardTest001() {
-        final String fields = "buildDate";
+    public void aliasTest001() {
+        final AliasPojo aliasPojo = new AliasPojo();
+        final String fields = "number,myNumber";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, StaticPojo.class);
+        partialize.setAliases(new HashMap<String, String>(){{
+            put("MyNumber", "number");
+        }});
+        final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
         Assert.assertNotNull(result);
-        Assert.assertTrue(result.has("buildDate"));
-        Assert.assertEquals("2016-01-10", result.get("buildDate").asText());
-    }
-
-    /**
-     * @since 16.01.18
-     */
-    @Test
-    public void standardTest002() {
-        final MixedPojo mixedPojo = new MixedPojo();
-        final String fields = "number,42";
-        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, MixedPojo.class, mixedPojo);
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.has("number"));
-        Assert.assertTrue(result.has("42"));
+        Assert.assertNotNull(result.get("number"));
         Assert.assertEquals(42, result.get("number").asInt());
-        Assert.assertEquals(42, result.get("42").asInt());
-    }
-
-    /**
-     * StaticPojo.
-     *
-     * @author Thibault Meyer
-     * @version 16.01.18
-     * @since 16.01.18
-     */
-    @Partialize(allowedFields = "buildDate")
-    public static class StaticPojo {
-
-        public static String getBuildDate() {
-            return "2016-01-10";
-        }
+        Assert.assertNotNull(result.get("myNumber"));
+        Assert.assertEquals(42, result.get("myNumber").asInt());
     }
 
     /**
      * MixedPojo.
      *
      * @author Thibault Meyer
-     * @version 16.01.18
-     * @since 16.01.18
+     * @version 16.03.10
+     * @since 16.03.10
      */
-    @Partialize(allowedFields = {"number", "42"})
-    public static class MixedPojo {
+    @Partialize(allowedFields = {"number"})
+    public static class AliasPojo {
 
         private final int number;
 
-        public MixedPojo() {
+        public AliasPojo() {
             this.number = 42;
-        }
-
-        public static int get42() {
-            return 42;
         }
 
         public int getNumber() {

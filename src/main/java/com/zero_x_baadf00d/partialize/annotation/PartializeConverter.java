@@ -32,8 +32,8 @@ import java.lang.annotation.*;
  * built-in converters fails.
  *
  * @author Thibault Meyer
- * @version 16.01
- * @since 16.01
+ * @version 16.01.29
+ * @since 16.01.18
  */
 @Documented
 @Target({ElementType.FIELD})
@@ -44,7 +44,7 @@ public @interface PartializeConverter {
      * The converted to apply on the field value.
      *
      * @return The converter class
-     * @since 16.01
+     * @since 16.01.18
      */
     Class<?> value() default DefaultConverter.class;
 }

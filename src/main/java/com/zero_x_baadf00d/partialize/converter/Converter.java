@@ -30,8 +30,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * All converters must implement this interface.
  *
  * @author Thibault Meyer
- * @version 16.01
- * @since 16.01
+ * @version 16.01.18
+ * @since 16.01.18
  */
 public interface Converter<T> {
 
@@ -41,7 +41,7 @@ public interface Converter<T> {
      * @param fieldName The field name
      * @param data      The data to convert
      * @param node      The node where to put the converted data
-     * @since 16.01
+     * @since 16.01.18
      */
     void convert(final String fieldName, final T data, final ObjectNode node);
 
@@ -51,7 +51,7 @@ public interface Converter<T> {
      * @param fieldName The field name
      * @param data      The data to convert
      * @param node      The node where to put the converted data
-     * @since 16.01
+     * @since 16.01.18
      */
     void convert(final String fieldName, final T data, final ArrayNode node);
 }
