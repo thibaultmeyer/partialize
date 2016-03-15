@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 16.03.11
+ * @version 16.03.15
  * @since 16.01.18
  */
 public class Partialize {
@@ -100,6 +100,13 @@ public class Partialize {
     private Map<String, String> aliases;
 
     /**
+     * Exception function.
+     *
+     * @since 16.03.15
+     */
+    private Function<Exception, Void> exceptionFunction;
+
+    /**
      * Build a default instance.
      *
      * @since 16.01.18
@@ -115,6 +122,7 @@ public class Partialize {
      * @since 16.01.18
      */
     public Partialize(final int maximumDepth) {
+        this.exceptionFunction = null;
         this.objectMapper = new ObjectMapper();
         this.maximumDepth = maximumDepth > 0 ? maximumDepth : 1;
     }
@@ -130,6 +138,19 @@ public class Partialize {
      */
     public Partialize setAccessPolicy(final Function<AccessPolicy, Boolean> apFunction) {
         this.accessPolicyFunction = apFunction;
+        return this;
+    }
+
+    /**
+     * Defines a function that will be called throughout the process
+     * when exception occurs.
+     *
+     * @param exceptionFunct The function to execute
+     * @return The current instance of {@code Partialize}
+     * @since 16.03.15
+     */
+    public Partialize setExceptionCallback(final Function<Exception, Void> exceptionFunct) {
+        this.exceptionFunction = exceptionFunct;
         return this;
     }
 
@@ -234,13 +255,18 @@ public class Partialize {
                         final Converter converter = (Converter) convertClazz.newInstance();
                         converter.convert(aliasField, object, partialArray);
                     } catch (InstantiationException ex) {
-                        ex.printStackTrace();
+                        if (this.exceptionFunction != null) {
+                            this.exceptionFunction.apply(ex);
+                        }
                         partialArray.add(object.toString());
                     }
                 } else {
                     partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
                 }
-            } catch (NoSuchFieldException | IllegalAccessException ignore) {
+            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                if (this.exceptionFunction != null) {
+                    this.exceptionFunction.apply(ex);
+                }
                 partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
             }
         }
@@ -298,13 +324,18 @@ public class Partialize {
                         final Converter converter = (Converter) convertClazz.newInstance();
                         converter.convert(aliasField, object, partialObject);
                     } catch (InstantiationException ex) {
-                        ex.printStackTrace();
+                        if (this.exceptionFunction != null) {
+                            this.exceptionFunction.apply(ex);
+                        }
                         partialObject.put(aliasField, object.toString());
                     }
                 } else {
                     this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
                 }
-            } catch (NoSuchFieldException | IllegalAccessException ignore) {
+            } catch (NoSuchFieldException | IllegalAccessException ex) {
+                if (this.exceptionFunction != null) {
+                    this.exceptionFunction.apply(ex);
+                }
                 this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
             }
         }
@@ -399,7 +430,10 @@ public class Partialize {
                                 final Method method = clazz.getMethod(field);
                                 final Object object = method.invoke(instance);
                                 this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
-                            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+                            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                                if (this.exceptionFunction != null) {
+                                    this.exceptionFunction.apply(ex);
+                                }
                             }
                         }
                     }
