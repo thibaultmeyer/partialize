@@ -145,7 +145,7 @@ public class BasicTest {
     @Test
     public void basicTest004() {
         this.initializePojo();
-        final String fields = "emails(uid,email),*";
+        final String fields = "*,emails(uid,email)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
 

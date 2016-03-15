@@ -54,6 +54,7 @@ public class AliasTest {
             put("secret", "number");
         }});
         final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
+
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.get("number"));
         Assert.assertEquals(42, result.get("number").asInt());

@@ -372,6 +372,7 @@ public class Partialize {
     private ObjectNode buildPartialObject(final int depth, String fields, final Class<?> clazz, final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
             if (clazz.isAnnotationPresent(com.zero_x_baadf00d.partialize.annotation.Partialize.class)) {
+                final List<String> closedFields = new ArrayList<>();
                 List<String> allowedFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).allowedFields());
                 List<String> defaultFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).defaultFields());
                 if (allowedFields.isEmpty()) {
@@ -401,10 +402,16 @@ public class Partialize {
                     String word = scanner.next();
                     String args = null;
                     if (word.compareTo("*") == 0) {
-                        final String tmp = fields;
+                        final StringBuilder sb = new StringBuilder();
+                        if (scanner.hasNext()) {
+                            scanner.useDelimiter("\n");
+                            sb.append(",");
+                            sb.append(scanner.next());
+                        }
+                        final Scanner newScanner = new Scanner(allowedFields.stream().filter(f -> !closedFields.contains(f)).collect(Collectors.joining(",")) + sb.toString());
+                        newScanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                         scanner.close();
-                        scanner = new Scanner(allowedFields.stream().filter(f -> !tmp.contains(f)).collect(Collectors.joining(",")));
-                        scanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
+                        scanner = newScanner;
                     }
                     if (word.contains("(")) {
                         while (scanner.hasNext() && (StringUtils.countMatches(word, "(") != StringUtils.countMatches(word, ")"))) {
@@ -422,6 +429,7 @@ public class Partialize {
                         if (this.accessPolicyFunction != null && !this.accessPolicyFunction.apply(new AccessPolicy(clazz, instance, field))) {
                             continue;
                         }
+                        closedFields.add(aliasField);
                         try {
                             final Method method = clazz.getMethod("get" + WordUtils.capitalize(field));
                             final Object object = method.invoke(instance);

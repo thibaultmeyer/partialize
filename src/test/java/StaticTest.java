@@ -61,7 +61,7 @@ public class StaticTest {
         final String fields = "number,42,null";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, MixedPojo.class, mixedPojo);
-        System.err.println(result);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("number"));
         Assert.assertTrue(result.has("42"));
