@@ -408,7 +408,19 @@ public class Partialize {
                             sb.append(",");
                             sb.append(scanner.next());
                         }
-                        final Scanner newScanner = new Scanner(allowedFields.stream().filter(f -> !closedFields.contains(f)).collect(Collectors.joining(",")) + sb.toString());
+                        final Scanner newScanner = new Scanner(allowedFields.stream()
+                                .filter(f -> !closedFields.contains(f))
+                                .map(f -> {
+                                    if (this.aliases != null && this.aliases.containsValue(f)) {
+                                        for (Map.Entry<String, String> e : this.aliases.entrySet()) {
+                                            if (e.getValue().compareToIgnoreCase(f) == 0) {
+                                                return e.getKey();
+                                            }
+                                        }
+                                    }
+                                    return f;
+                                })
+                                .collect(Collectors.joining(",")) + sb.toString());
                         newScanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                         scanner.close();
                         scanner = newScanner;
