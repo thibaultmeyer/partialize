@@ -288,7 +288,7 @@ public class Partialize {
     private void internalBuild(final int depth, final String aliasField, final String field, final String args,
                                final ObjectNode partialObject, final Class<?> clazz, final Object object) {
         if (object == null) {
-            partialObject.putNull(field);
+            partialObject.putNull(aliasField);
         } else if (object instanceof String) {
             partialObject.put(aliasField, (String) object);
         } else if (object instanceof Integer) {
@@ -373,7 +373,7 @@ public class Partialize {
         if (depth <= this.maximumDepth) {
             if (clazz.isAnnotationPresent(com.zero_x_baadf00d.partialize.annotation.Partialize.class)) {
                 List<String> allowedFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).allowedFields());
-                List<String> wildCardFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).wildcardFields());
+                List<String> defaultFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).defaultFields());
                 if (allowedFields.isEmpty()) {
                     allowedFields = new ArrayList<>();
                     for (final Method m : clazz.getDeclaredMethods()) {
@@ -389,21 +389,21 @@ public class Partialize {
                         }
                     }
                 }
-                if (wildCardFields.isEmpty()) {
-                    wildCardFields = allowedFields;
+                if (defaultFields.isEmpty()) {
+                    defaultFields = allowedFields;
                 }
                 if (fields == null || fields.length() == 0) {
-                    fields = wildCardFields.stream().collect(Collectors.joining(","));
+                    fields = defaultFields.stream().collect(Collectors.joining(","));
                 }
-
                 Scanner scanner = new Scanner(fields);
                 scanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                 while (scanner.hasNext()) {
                     String word = scanner.next();
                     String args = null;
                     if (word.compareTo("*") == 0) {
+                        final String tmp = fields;
                         scanner.close();
-                        scanner = new Scanner(wildCardFields.stream().collect(Collectors.joining(",")));
+                        scanner = new Scanner(allowedFields.stream().filter(f -> !tmp.contains(f)).collect(Collectors.joining(",")));
                         scanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                     }
                     if (word.contains("(")) {

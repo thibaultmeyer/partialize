@@ -110,11 +110,10 @@ public class BasicTest {
         final String fields = "*";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
-
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("uid"));
         Assert.assertFalse(result.has("id"));
-        Assert.assertFalse(result.has("emails"));
+        Assert.assertTrue(result.has("emails"));
         Assert.assertEquals("John", result.get("firstName").asText());
         Assert.assertEquals("Smith", result.get("lastName").asText());
     }
@@ -134,7 +133,7 @@ public class BasicTest {
         Assert.assertTrue(result.get("emails").has(0));
         Assert.assertTrue(result.get("emails").has(1));
         Assert.assertFalse(result.get("emails").has(2));
-        Assert.assertFalse(result.get("emails").get(0).has("email"));
+        Assert.assertTrue(result.get("emails").get(0).has("email"));
         Assert.assertTrue(result.get("emails").get(0).has("uid"));
         Assert.assertFalse(result.get("emails").get(0).has("id"));
         Assert.assertEquals(this.account.getEmails().get(0).getUid().toString(), result.get("emails").get(0).get("uid").asText());
@@ -171,7 +170,7 @@ public class BasicTest {
      */
     @Partialize(
             allowedFields = {"uid", "email", "isDefault"},
-            wildcardFields = "uid"
+            defaultFields = "uid"
     )
     public static class EmailPojo {
 
@@ -222,7 +221,7 @@ public class BasicTest {
      */
     @Partialize(
             allowedFields = {"uid", "firstName", "lastName", "emails"},
-            wildcardFields = {"uid", "firstName", "lastName"}
+            defaultFields = {"uid", "firstName", "lastName"}
     )
     public static class AccountPojo {
 
