@@ -49,7 +49,7 @@ installed.
 ```java
 @Partialize(
     allowedFields = {"uid", "firstName", "lastName", "emails", "createDate"},
-    wildcardFields = {"uid", "firstName", "lastName"}
+    defaultFields = {"uid", "firstName", "lastName"}
 )
 public class AccountModel {
     private UUID uid;
@@ -67,7 +67,7 @@ public class AccountModel {
 ```java
 @Partialize(
     allowedFields = {"uid", "email", "isDefault"},
-    wildcardFields = {"email", "isDefault"}
+    defaultFields = {"email", "isDefault"}
 )
 public class AccountEmailModel {
     private UUID uid;
