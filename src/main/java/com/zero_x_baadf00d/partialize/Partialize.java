@@ -36,6 +36,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -104,7 +105,7 @@ public class Partialize {
      *
      * @since 16.03.15
      */
-    private Function<Exception, Void> exceptionFunction;
+    private Consumer<Exception> exceptionConsumer;
 
     /**
      * Build a default instance.
@@ -122,7 +123,7 @@ public class Partialize {
      * @since 16.01.18
      */
     public Partialize(final int maximumDepth) {
-        this.exceptionFunction = null;
+        this.exceptionConsumer = null;
         this.objectMapper = new ObjectMapper();
         this.maximumDepth = maximumDepth > 0 ? maximumDepth : 1;
     }
@@ -142,15 +143,15 @@ public class Partialize {
     }
 
     /**
-     * Defines a function that will be called throughout the process
+     * Defines a callback that will be called throughout the process
      * when exception occurs.
      *
-     * @param exceptionFunct The function to execute
+     * @param exceptionCallback The callback to execute
      * @return The current instance of {@code Partialize}
      * @since 16.03.15
      */
-    public Partialize setExceptionCallback(final Function<Exception, Void> exceptionFunct) {
-        this.exceptionFunction = exceptionFunct;
+    public Partialize setExceptionCallback(final Consumer<Exception> exceptionCallback) {
+        this.exceptionConsumer = exceptionCallback;
         return this;
     }
 
@@ -255,8 +256,8 @@ public class Partialize {
                         final Converter converter = (Converter) convertClazz.newInstance();
                         converter.convert(aliasField, object, partialArray);
                     } catch (InstantiationException ex) {
-                        if (this.exceptionFunction != null) {
-                            this.exceptionFunction.apply(ex);
+                        if (this.exceptionConsumer != null) {
+                            this.exceptionConsumer.accept(ex);
                         }
                         partialArray.add(object.toString());
                     }
@@ -264,8 +265,8 @@ public class Partialize {
                     partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
                 }
             } catch (NoSuchFieldException | IllegalAccessException ex) {
-                if (this.exceptionFunction != null) {
-                    this.exceptionFunction.apply(ex);
+                if (this.exceptionConsumer != null) {
+                    this.exceptionConsumer.accept(ex);
                 }
                 partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
             }
@@ -324,8 +325,8 @@ public class Partialize {
                         final Converter converter = (Converter) convertClazz.newInstance();
                         converter.convert(aliasField, object, partialObject);
                     } catch (InstantiationException ex) {
-                        if (this.exceptionFunction != null) {
-                            this.exceptionFunction.apply(ex);
+                        if (this.exceptionConsumer != null) {
+                            this.exceptionConsumer.accept(ex);
                         }
                         partialObject.put(aliasField, object.toString());
                     }
@@ -333,8 +334,8 @@ public class Partialize {
                     this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
                 }
             } catch (NoSuchFieldException | IllegalAccessException ex) {
-                if (this.exceptionFunction != null) {
-                    this.exceptionFunction.apply(ex);
+                if (this.exceptionConsumer != null) {
+                    this.exceptionConsumer.accept(ex);
                 }
                 this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
             }
@@ -431,8 +432,8 @@ public class Partialize {
                                 final Object object = method.invoke(instance);
                                 this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
                             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-                                if (this.exceptionFunction != null) {
-                                    this.exceptionFunction.apply(ex);
+                                if (this.exceptionConsumer != null) {
+                                    this.exceptionConsumer.accept(ex);
                                 }
                             }
                         }
