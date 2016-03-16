@@ -35,7 +35,7 @@ import java.util.HashMap;
  * AliasTest.
  *
  * @author Thibault Meyer
- * @version 16.03.10
+ * @version 16.03.16
  * @since 16.03.10
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -47,11 +47,13 @@ public class AliasTest {
     @Test
     public void aliasTest001() {
         final AliasPojo aliasPojo = new AliasPojo();
-        final String fields = "number,myNumber,secret";
+        final String fields = "number,myNumber,secret,pojo(*)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         partialize.setAliases(new HashMap<String, String>() {{
             put("myNumber", "number");
             put("secret", "number");
+            put("logo", "logoUrl");
+            put("cover", "coverUrl");
         }});
         final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
 
@@ -62,22 +64,47 @@ public class AliasTest {
         Assert.assertEquals(42, result.get("myNumber").asInt());
         Assert.assertNotNull(result.get("secret"));
         Assert.assertEquals(42, result.get("secret").asInt());
+        Assert.assertNotNull(result.get("pojo"));
+        Assert.assertNotNull(result.get("pojo").get("cover"));
+    }
+
+    /**
+     * @since 16.03.16
+     */
+    @Test
+    public void aliasTest002() {
+        final AliasPojo aliasPojo = new AliasPojo();
+        final String fields = "*";
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        partialize.setAliases(new HashMap<String, String>() {{
+            put("myNumber", "number");
+            put("cover", "coverUrl");
+        }});
+        final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
+
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.get("myNumber"));
+        Assert.assertNotNull(result.get("pojo"));
+        Assert.assertNotNull(result.get("pojo").get("cover"));
     }
 
     /**
      * MixedPojo.
      *
      * @author Thibault Meyer
-     * @version 16.03.10
+     * @version 16.03.16
      * @since 16.03.10
      */
-    @Partialize(allowedFields = {"number"})
+    @Partialize(allowedFields = {"number", "pojo"})
     public static class AliasPojo {
 
         private final int number;
 
+        private final AliasPojo2 aliasPojo2;
+
         public AliasPojo() {
             this.number = 42;
+            this.aliasPojo2 = new AliasPojo2();
         }
 
         public int getNumber() {
@@ -86,6 +113,25 @@ public class AliasTest {
 
         public int getSecret() {
             return 23489;
+        }
+
+        public AliasPojo2 getPojo() {
+            return this.aliasPojo2;
+        }
+    }
+
+    /**
+     * MixedPojo2.
+     *
+     * @author Thibault Meyer
+     * @version 16.03.16
+     * @since 16.03.16
+     */
+    @Partialize(allowedFields = {"coverUrl"})
+    public static class AliasPojo2 {
+
+        public String getCoverUrl() {
+            return "http://domain.local/cover.png";
         }
     }
 }

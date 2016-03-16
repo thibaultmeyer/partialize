@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 16.03.15
+ * @version 16.03.16
  * @since 16.01.18
  */
 public class Partialize {
@@ -391,7 +391,18 @@ public class Partialize {
                     }
                 }
                 if (defaultFields.isEmpty()) {
-                    defaultFields = allowedFields;
+                    defaultFields = allowedFields.stream()
+                            .map(f -> {
+                                if (this.aliases != null && this.aliases.containsValue(f)) {
+                                    for (Map.Entry<String, String> e : this.aliases.entrySet()) {
+                                        if (e.getValue().compareToIgnoreCase(f) == 0) {
+                                            return e.getKey();
+                                        }
+                                    }
+                                }
+                                return f;
+                            })
+                            .collect(Collectors.toList());
                 }
                 if (fields == null || fields.length() == 0) {
                     fields = defaultFields.stream().collect(Collectors.joining(","));
