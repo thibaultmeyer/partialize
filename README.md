@@ -57,7 +57,6 @@ public class AccountModel {
     private String lastName;
     private String password;
     private List<AccountEmailModel> emails;
-    @PartializeConverter(JodaDateTimeConverter.class)
     private DateTime createDate;
 
     /* ADD GETTER / SETTER METHODS HERE */
@@ -95,6 +94,11 @@ public class JodaDateTimeConverter implements Converter<DateTime> {
     public void convert(final String fieldName, final DateTime data, final ArrayNode node) {
         node.add(data.toString(JodaDateTimeConverter.DATETIME_FORMAT));
     }
+
+    @Override
+    public Class<DateTime> getManagedObjectClass() {
+        return DateTime.class;
+    }
 }
 ```
 
@@ -105,6 +109,7 @@ final AccountModel account = AccountModel.find().where().eq("id", 1).findUnique(
 
 final String fields = "firstName,lastName,emails(email,isDefault),createDate";
 final Partialize partialize = new Partialize();
+partialize.registerConverter(new JodaDateTimeConverter());
 final ContainerNode result = partialize.buildPartialObject(fields, AccountModel.class, account);
 System.out.println(result);
 ```

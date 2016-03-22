@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * representation of the given object.
  *
  * @author Thibault Meyer
- * @version 16.01.18
+ * @version 16.03.22
  * @since 16.01.18
  */
 public class DefaultConverter implements Converter<Object> {
@@ -44,5 +44,10 @@ public class DefaultConverter implements Converter<Object> {
     @Override
     public void convert(final String fieldName, final Object data, final ArrayNode node) {
         node.add(data.toString());
+    }
+
+    @Override
+    public Class<Object> getManagedObjectClass() {
+        return Object.class;
     }
 }

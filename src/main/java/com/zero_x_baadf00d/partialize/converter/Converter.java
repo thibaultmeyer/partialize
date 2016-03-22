@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * All converters must implement this interface.
  *
  * @author Thibault Meyer
- * @version 16.01.18
+ * @version 16.03.22
  * @since 16.01.18
  */
 public interface Converter<T> {
@@ -54,4 +54,12 @@ public interface Converter<T> {
      * @since 16.01.18
      */
     void convert(final String fieldName, final T data, final ArrayNode node);
+
+    /**
+     * Get class of the object managed by this converter.
+     *
+     * @return The class of the managed object
+     * @since 16.03.22
+     */
+    Class<T> getManagedObjectClass();
 }

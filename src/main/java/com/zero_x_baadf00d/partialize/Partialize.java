@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.zero_x_baadf00d.partialize.annotation.PartializeConverter;
 import com.zero_x_baadf00d.partialize.converter.Converter;
 import com.zero_x_baadf00d.partialize.policy.AccessPolicy;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +45,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 16.03.16
+ * @version 16.03.22
  * @since 16.01.18
  */
 public class Partialize {
@@ -56,7 +55,7 @@ public class Partialize {
      *
      * @since 16.01.18
      */
-    public static final int DEFAULT_MAXIMUM_DEPTH = 64;
+    private static final int DEFAULT_MAXIMUM_DEPTH = 64;
 
     /**
      * Default scanner delimiter pattern.
@@ -249,25 +248,10 @@ public class Partialize {
                 partialArray.add(tmp);
             }
         } else {
-            try {
-                if (clazz.getDeclaredField(field).isAnnotationPresent(PartializeConverter.class)) {
-                    final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartializeConverter.class).value();
-                    try {
-                        final Converter converter = (Converter) convertClazz.newInstance();
-                        converter.convert(aliasField, object, partialArray);
-                    } catch (InstantiationException ex) {
-                        if (this.exceptionConsumer != null) {
-                            this.exceptionConsumer.accept(ex);
-                        }
-                        partialArray.add(object.toString());
-                    }
-                } else {
-                    partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
-                }
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                if (this.exceptionConsumer != null) {
-                    this.exceptionConsumer.accept(ex);
-                }
+            final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
+            if (converter != null) {
+                converter.convert(aliasField, object, partialArray);
+            } else {
                 partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
             }
         }
@@ -318,25 +302,10 @@ public class Partialize {
                 partialObject.put(aliasField, tmp);
             }
         } else {
-            try {
-                if (clazz.getDeclaredField(field).isAnnotationPresent(PartializeConverter.class)) {
-                    final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartializeConverter.class).value();
-                    try {
-                        final Converter converter = (Converter) convertClazz.newInstance();
-                        converter.convert(aliasField, object, partialObject);
-                    } catch (InstantiationException ex) {
-                        if (this.exceptionConsumer != null) {
-                            this.exceptionConsumer.accept(ex);
-                        }
-                        partialObject.put(aliasField, object.toString());
-                    }
-                } else {
-                    this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
-                }
-            } catch (NoSuchFieldException | IllegalAccessException ex) {
-                if (this.exceptionConsumer != null) {
-                    this.exceptionConsumer.accept(ex);
-                }
+            final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
+            if (converter != null) {
+                converter.convert(aliasField, object, partialObject);
+            } else {
                 this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
             }
         }
@@ -496,5 +465,15 @@ public class Partialize {
             }
         }
         return partialObject;
+    }
+
+    /**
+     * Register a new converter to Partialize.
+     *
+     * @param converter The converter to register
+     * @since 16.03.22
+     */
+    public void registerConverter(final Converter converter) {
+        PartializeConverterManager.getInstance().registerConverter(converter);
     }
 }
