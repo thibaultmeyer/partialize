@@ -3,23 +3,24 @@ package com.zero_x_baadf00d.partialize;
 import com.zero_x_baadf00d.partialize.converter.Converter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * This manager handles all registered converters.
+ * This manager handles all registered registeredConverters.
  *
  * @author Thibault Meyer
  * @version 16.03.22
  * @since 16.03.22
  */
-final class PartializeConverterManager {
+public final class PartializeConverterManager {
 
     /**
-     * Handle to current enabled converters.
+     * Handle to current enabled registeredConverters.
      *
      * @since 16.03.22
      */
-    private final Map<Class, Converter> converters;
+    private final Map<Class, Converter> registeredConverters;
 
     /**
      * Build a basic instance.
@@ -27,7 +28,7 @@ final class PartializeConverterManager {
      * @since 16.03.22
      */
     private PartializeConverterManager() {
-        this.converters = new HashMap<>();
+        this.registeredConverters = new HashMap<>();
     }
 
     /**
@@ -36,7 +37,7 @@ final class PartializeConverterManager {
      * @return The current instance of {@code PartializeConverterManager}
      * @since 16.03.22
      */
-    static PartializeConverterManager getInstance() {
+    public static PartializeConverterManager getInstance() {
         return PartializeConverterManagerSingletonHolder.INSTANCE;
     }
 
@@ -46,8 +47,32 @@ final class PartializeConverterManager {
      * @param converter The converter to register
      * @since 16.03.22
      */
-    void registerConverter(final Converter converter) {
-        this.converters.putIfAbsent(converter.getManagedObjectClass(), converter);
+    public void registerConverter(final Converter converter) {
+        this.registeredConverters.putIfAbsent(converter.getManagedObjectClass(), converter);
+    }
+
+    /**
+     * Register new registeredConverters to Partialize.
+     *
+     * @param converters A list of registeredConverters to register
+     * @since 16.03.22
+     */
+    public void registerConverters(final Converter... converters) {
+        for (final Converter converter : converters) {
+            this.registeredConverters.putIfAbsent(converter.getManagedObjectClass(), converter);
+        }
+    }
+
+    /**
+     * Register new registeredConverters to Partialize.
+     *
+     * @param converters A list of registeredConverters to register
+     * @since 16.03.22
+     */
+    public void registerConverters(final List<Converter> converters) {
+        for (final Converter converter : converters) {
+            this.registeredConverters.putIfAbsent(converter.getManagedObjectClass(), converter);
+        }
     }
 
     /**
@@ -56,8 +81,8 @@ final class PartializeConverterManager {
      * @param clazz The class of the object to convert
      * @return The converter, otherwise, {@code null}
      */
-    Converter getConverter(final Class clazz) {
-        return this.converters.get(clazz);
+    public Converter getConverter(final Class clazz) {
+        return this.registeredConverters.get(clazz);
     }
 
     /**

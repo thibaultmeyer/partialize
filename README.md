@@ -105,11 +105,11 @@ public class JodaDateTimeConverter implements Converter<DateTime> {
 
 ### Code
 ```java
+PartializeConverterManager.getInstance().registerConverter(new JodaDateTimeConverter());
 final AccountModel account = AccountModel.find().where().eq("id", 1).findUnique();
 
 final String fields = "firstName,lastName,emails(email,isDefault),createDate";
 final Partialize partialize = new Partialize();
-partialize.registerConverter(new JodaDateTimeConverter());
 final ContainerNode result = partialize.buildPartialObject(fields, AccountModel.class, account);
 System.out.println(result);
 ```

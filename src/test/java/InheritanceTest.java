@@ -49,7 +49,7 @@ public class InheritanceTest {
         final Pojo pojo = new Pojo();
         final String fields = "id,name,createdAt";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        partialize.registerConverter(new JodaDateTimeConverter());
+        com.zero_x_baadf00d.partialize.PartializeConverterManager.getInstance().registerConverter(new JodaDateTimeConverter());
         final ContainerNode result = partialize.buildPartialObject(fields, Pojo.class, pojo);
 
         Assert.assertNotNull(result);

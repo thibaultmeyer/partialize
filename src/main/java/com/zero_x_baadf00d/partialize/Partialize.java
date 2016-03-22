@@ -466,14 +466,4 @@ public class Partialize {
         }
         return partialObject;
     }
-
-    /**
-     * Register a new converter to Partialize.
-     *
-     * @param converter The converter to register
-     * @since 16.03.22
-     */
-    public void registerConverter(final Converter converter) {
-        PartializeConverterManager.getInstance().registerConverter(converter);
-    }
 }
