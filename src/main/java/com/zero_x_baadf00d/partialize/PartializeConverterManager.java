@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * PartializeConverterManager.
+ * This manager handles all registered converters.
  *
  * @author Thibault Meyer
  * @version 16.03.22
