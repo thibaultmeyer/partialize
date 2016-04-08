@@ -461,7 +461,7 @@ public class Partialize {
                     }
                 }
             } else {
-                throw new RuntimeException(clazz.getCanonicalName() + " is not annotated");
+                throw new RuntimeException("Can't convert " + clazz.getCanonicalName());
             }
         }
         return partialObject;
