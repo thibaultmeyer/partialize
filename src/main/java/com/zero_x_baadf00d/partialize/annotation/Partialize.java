@@ -29,7 +29,7 @@ import java.lang.annotation.*;
  * Indicate that the decorated class can be processed by Partialize.
  *
  * @author Thibault Meyer
- * @version 16.01.29
+ * @version 16.03.15
  * @since 16.01.18
  */
 @Documented
@@ -46,11 +46,10 @@ public @interface Partialize {
     String[] allowedFields() default {};
 
     /**
-     * Field names used to replace wildcard. If array is empty, data
-     * from Partialize#allowedFields will be used.
+     * Defines default fields to partialize.
      *
      * @return An array of default field names
      * @since 16.01.18
      */
-    String[] wildcardFields() default {};
+    String[] defaultFields() default {};
 }

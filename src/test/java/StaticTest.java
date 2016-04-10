@@ -58,14 +58,16 @@ public class StaticTest {
     @Test
     public void standardTest002() {
         final MixedPojo mixedPojo = new MixedPojo();
-        final String fields = "number,42";
+        final String fields = "number,42,null";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, MixedPojo.class, mixedPojo);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("number"));
         Assert.assertTrue(result.has("42"));
         Assert.assertEquals(42, result.get("number").asInt());
         Assert.assertEquals(42, result.get("42").asInt());
+        Assert.assertEquals(true, result.get("null").isNull());
     }
 
     /**
@@ -90,7 +92,7 @@ public class StaticTest {
      * @version 16.01.18
      * @since 16.01.18
      */
-    @Partialize(allowedFields = {"number", "42"})
+    @Partialize(allowedFields = {"number", "42", "null"})
     public static class MixedPojo {
 
         private final int number;
@@ -105,6 +107,10 @@ public class StaticTest {
 
         public int getNumber() {
             return this.number;
+        }
+
+        public String getNull() {
+            return null;
         }
     }
 }

@@ -22,17 +22,14 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
-import com.zero_x_baadf00d.partialize.annotation.PartializeConverter;
-import com.zero_x_baadf00d.partialize.converter.Converter;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import toolbox.JodaDateTimeConverter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +40,7 @@ import java.util.Map;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.02.21
+ * @version 16.03.22
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -70,6 +67,8 @@ public class StandardTest {
      */
     private void initializePojo() {
         if (this.bankAccount == null) {
+            com.zero_x_baadf00d.partialize.PartializeConverterManager.getInstance().registerConverter(new JodaDateTimeConverter());
+
             this.currentDateTime = DateTime.now();
             this.bankAccount = new BankAccountPojo();
             this.bankAccount.setAmount(42.84);
@@ -181,26 +180,6 @@ public class StandardTest {
     }
 
     /**
-     * JodaDateTimeConverter.
-     *
-     * @author Thibault Meyer
-     * @version 16.01.18
-     * @since 16.01.18
-     */
-    public static class JodaDateTimeConverter implements Converter<DateTime> {
-
-        @Override
-        public void convert(String fieldName, DateTime data, ObjectNode node) {
-            node.put(fieldName, data.toString("yyyy-MM-dd'T'HH:mm:ss"));
-        }
-
-        @Override
-        public void convert(String fieldName, DateTime data, ArrayNode node) {
-            node.add(data.toString("yyyy-MM-dd'T'HH:mm:ss"));
-        }
-    }
-
-    /**
      * BankAccountPojo.
      *
      * @author Thibault Meyer
@@ -215,7 +194,6 @@ public class StandardTest {
         private List<List<String>> listOfList;
         private Map<String, Object> attributes;
 
-        @PartializeConverter(JodaDateTimeConverter.class)
         private DateTime createDate;
 
         public List<List<String>> getListOfList() {

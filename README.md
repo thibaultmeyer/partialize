@@ -1,7 +1,7 @@
 # Partialize
 
 
-[![Latest release](https://img.shields.io/badge/latest_release-16.03-orange.svg)](https://github.com/0xbaadf00d/partialize/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-16.04-orange.svg)](https://github.com/0xbaadf00d/partialize/releases)
 [![JitPack](https://jitpack.io/v/0xbaadf00d/partialize.svg)](https://jitpack.io/#0xbaadf00d/partialize)
 [![Build](https://img.shields.io/travis-ci/0xbaadf00d/partialize.svg?branch=master&style=flat)](https://travis-ci.org/0xbaadf00d/partialize)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/0xbaadf00d/partialize/master/LICENSE)
@@ -49,7 +49,7 @@ installed.
 ```java
 @Partialize(
     allowedFields = {"uid", "firstName", "lastName", "emails", "createDate"},
-    wildcardFields = {"uid", "firstName", "lastName"}
+    defaultFields = {"uid", "firstName", "lastName"}
 )
 public class AccountModel {
     private UUID uid;
@@ -57,7 +57,6 @@ public class AccountModel {
     private String lastName;
     private String password;
     private List<AccountEmailModel> emails;
-    @PartializeConverter(JodaDateTimeConverter.class)
     private DateTime createDate;
 
     /* ADD GETTER / SETTER METHODS HERE */
@@ -67,7 +66,7 @@ public class AccountModel {
 ```java
 @Partialize(
     allowedFields = {"uid", "email", "isDefault"},
-    wildcardFields = {"email", "isDefault"}
+    defaultFields = {"email", "isDefault"}
 )
 public class AccountEmailModel {
     private UUID uid;
@@ -95,12 +94,18 @@ public class JodaDateTimeConverter implements Converter<DateTime> {
     public void convert(final String fieldName, final DateTime data, final ArrayNode node) {
         node.add(data.toString(JodaDateTimeConverter.DATETIME_FORMAT));
     }
+
+    @Override
+    public Class<DateTime> getManagedObjectClass() {
+        return DateTime.class;
+    }
 }
 ```
 
 
 ### Code
 ```java
+PartializeConverterManager.getInstance().registerConverter(new JodaDateTimeConverter());
 final AccountModel account = AccountModel.find().where().eq("id", 1).findUnique();
 
 final String fields = "firstName,lastName,emails(email,isDefault),createDate";

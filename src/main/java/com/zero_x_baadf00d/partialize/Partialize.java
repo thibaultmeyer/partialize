@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.zero_x_baadf00d.partialize.annotation.PartializeConverter;
 import com.zero_x_baadf00d.partialize.converter.Converter;
 import com.zero_x_baadf00d.partialize.policy.AccessPolicy;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +35,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 16.03.11
+ * @version 16.03.22
  * @since 16.01.18
  */
 public class Partialize {
@@ -55,7 +55,7 @@ public class Partialize {
      *
      * @since 16.01.18
      */
-    public static final int DEFAULT_MAXIMUM_DEPTH = 64;
+    private static final int DEFAULT_MAXIMUM_DEPTH = 64;
 
     /**
      * Default scanner delimiter pattern.
@@ -100,6 +100,13 @@ public class Partialize {
     private Map<String, String> aliases;
 
     /**
+     * Exception function.
+     *
+     * @since 16.03.15
+     */
+    private Consumer<Exception> exceptionConsumer;
+
+    /**
      * Build a default instance.
      *
      * @since 16.01.18
@@ -115,6 +122,7 @@ public class Partialize {
      * @since 16.01.18
      */
     public Partialize(final int maximumDepth) {
+        this.exceptionConsumer = null;
         this.objectMapper = new ObjectMapper();
         this.maximumDepth = maximumDepth > 0 ? maximumDepth : 1;
     }
@@ -130,6 +138,19 @@ public class Partialize {
      */
     public Partialize setAccessPolicy(final Function<AccessPolicy, Boolean> apFunction) {
         this.accessPolicyFunction = apFunction;
+        return this;
+    }
+
+    /**
+     * Defines a callback that will be called throughout the process
+     * when exception occurs.
+     *
+     * @param exceptionCallback The callback to execute
+     * @return The current instance of {@code Partialize}
+     * @since 16.03.15
+     */
+    public Partialize setExceptionCallback(final Consumer<Exception> exceptionCallback) {
+        this.exceptionConsumer = exceptionCallback;
         return this;
     }
 
@@ -227,20 +248,10 @@ public class Partialize {
                 partialArray.add(tmp);
             }
         } else {
-            try {
-                if (clazz.getDeclaredField(field).isAnnotationPresent(PartializeConverter.class)) {
-                    final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartializeConverter.class).value();
-                    try {
-                        final Converter converter = (Converter) convertClazz.newInstance();
-                        converter.convert(aliasField, object, partialArray);
-                    } catch (InstantiationException ex) {
-                        ex.printStackTrace();
-                        partialArray.add(object.toString());
-                    }
-                } else {
-                    partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
-                }
-            } catch (NoSuchFieldException | IllegalAccessException ignore) {
+            final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
+            if (converter != null) {
+                converter.convert(aliasField, object, partialArray);
+            } else {
                 partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
             }
         }
@@ -261,7 +272,7 @@ public class Partialize {
     private void internalBuild(final int depth, final String aliasField, final String field, final String args,
                                final ObjectNode partialObject, final Class<?> clazz, final Object object) {
         if (object == null) {
-            partialObject.putNull(field);
+            partialObject.putNull(aliasField);
         } else if (object instanceof String) {
             partialObject.put(aliasField, (String) object);
         } else if (object instanceof Integer) {
@@ -291,20 +302,10 @@ public class Partialize {
                 partialObject.put(aliasField, tmp);
             }
         } else {
-            try {
-                if (clazz.getDeclaredField(field).isAnnotationPresent(PartializeConverter.class)) {
-                    final Class<?> convertClazz = clazz.getDeclaredField(field).getAnnotation(PartializeConverter.class).value();
-                    try {
-                        final Converter converter = (Converter) convertClazz.newInstance();
-                        converter.convert(aliasField, object, partialObject);
-                    } catch (InstantiationException ex) {
-                        ex.printStackTrace();
-                        partialObject.put(aliasField, object.toString());
-                    }
-                } else {
-                    this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
-                }
-            } catch (NoSuchFieldException | IllegalAccessException ignore) {
+            final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
+            if (converter != null) {
+                converter.convert(aliasField, object, partialObject);
+            } else {
                 this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
             }
         }
@@ -340,8 +341,9 @@ public class Partialize {
     private ObjectNode buildPartialObject(final int depth, String fields, final Class<?> clazz, final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
             if (clazz.isAnnotationPresent(com.zero_x_baadf00d.partialize.annotation.Partialize.class)) {
+                final List<String> closedFields = new ArrayList<>();
                 List<String> allowedFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).allowedFields());
-                List<String> wildCardFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).wildcardFields());
+                List<String> defaultFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).defaultFields());
                 if (allowedFields.isEmpty()) {
                     allowedFields = new ArrayList<>();
                     for (final Method m : clazz.getDeclaredMethods()) {
@@ -357,22 +359,51 @@ public class Partialize {
                         }
                     }
                 }
-                if (wildCardFields.isEmpty()) {
-                    wildCardFields = allowedFields;
+                if (defaultFields.isEmpty()) {
+                    defaultFields = allowedFields.stream()
+                            .map(f -> {
+                                if (this.aliases != null && this.aliases.containsValue(f)) {
+                                    for (Map.Entry<String, String> e : this.aliases.entrySet()) {
+                                        if (e.getValue().compareToIgnoreCase(f) == 0) {
+                                            return e.getKey();
+                                        }
+                                    }
+                                }
+                                return f;
+                            })
+                            .collect(Collectors.toList());
                 }
                 if (fields == null || fields.length() == 0) {
-                    fields = wildCardFields.stream().collect(Collectors.joining(","));
+                    fields = defaultFields.stream().collect(Collectors.joining(","));
                 }
-
                 Scanner scanner = new Scanner(fields);
                 scanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                 while (scanner.hasNext()) {
                     String word = scanner.next();
                     String args = null;
                     if (word.compareTo("*") == 0) {
+                        final StringBuilder sb = new StringBuilder();
+                        if (scanner.hasNext()) {
+                            scanner.useDelimiter("\n");
+                            sb.append(",");
+                            sb.append(scanner.next());
+                        }
+                        final Scanner newScanner = new Scanner(allowedFields.stream()
+                                .filter(f -> !closedFields.contains(f))
+                                .map(f -> {
+                                    if (this.aliases != null && this.aliases.containsValue(f)) {
+                                        for (Map.Entry<String, String> e : this.aliases.entrySet()) {
+                                            if (e.getValue().compareToIgnoreCase(f) == 0) {
+                                                return e.getKey();
+                                            }
+                                        }
+                                    }
+                                    return f;
+                                })
+                                .collect(Collectors.joining(",")) + sb.toString());
+                        newScanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                         scanner.close();
-                        scanner = new Scanner(wildCardFields.stream().collect(Collectors.joining(",")));
-                        scanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
+                        scanner = newScanner;
                     }
                     if (word.contains("(")) {
                         while (scanner.hasNext() && (StringUtils.countMatches(word, "(") != StringUtils.countMatches(word, ")"))) {
@@ -390,6 +421,7 @@ public class Partialize {
                         if (this.accessPolicyFunction != null && !this.accessPolicyFunction.apply(new AccessPolicy(clazz, instance, field))) {
                             continue;
                         }
+                        closedFields.add(aliasField);
                         try {
                             final Method method = clazz.getMethod("get" + WordUtils.capitalize(field));
                             final Object object = method.invoke(instance);
@@ -399,7 +431,10 @@ public class Partialize {
                                 final Method method = clazz.getMethod(field);
                                 final Object object = method.invoke(instance);
                                 this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
-                            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+                            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                                if (this.exceptionConsumer != null) {
+                                    this.exceptionConsumer.accept(ex);
+                                }
                             }
                         }
                     }
@@ -426,7 +461,7 @@ public class Partialize {
                     }
                 }
             } else {
-                throw new RuntimeException(clazz.getCanonicalName() + " is not annotated");
+                throw new RuntimeException("Can't convert " + clazz.getCanonicalName());
             }
         }
         return partialObject;
