@@ -29,7 +29,9 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * AliasTest.
@@ -89,22 +91,67 @@ public class AliasTest {
     }
 
     /**
+     * @since 16.04.20
+     */
+    @Test
+    public void aliasTest003() {
+        final AliasPojo aliasPojo = new AliasPojo();
+        final String fields = "pojos";
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        partialize.setAliases(new HashMap<String, String>() {{
+            put("pojos", "linkedPojos");
+        }});
+        final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
+
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.get("pojos"));
+    }
+
+    /**
+     * Simple pojo.
+     *
+     * @author Thibault Meyer
+     * @version 16.04.20
+     * @since 16.04.20
+     */
+    @Partialize(allowedFields = {"amount"})
+    public static class Pojo {
+
+        public Integer amount;
+
+        public Pojo() {
+            amount = 42;
+        }
+
+        public Integer getAmount() {
+            return this.amount;
+        }
+    }
+
+    /**
      * MixedPojo.
      *
      * @author Thibault Meyer
-     * @version 16.03.16
+     * @version 16.04.20
      * @since 16.03.10
      */
-    @Partialize(allowedFields = {"number", "pojo"})
+    @Partialize(allowedFields = {"number", "pojo", "linkedPojos"})
     public static class AliasPojo {
 
         private final int number;
 
         private final AliasPojo2 aliasPojo2;
 
+        private final List<Pojo> pojos;
+
         public AliasPojo() {
             this.number = 42;
             this.aliasPojo2 = new AliasPojo2();
+            this.pojos = new ArrayList<>();
+            this.pojos.add(new Pojo());
+            this.pojos.add(new Pojo());
+            this.pojos.add(new Pojo());
+            this.pojos.add(new Pojo());
         }
 
         public int getNumber() {
@@ -117,6 +164,14 @@ public class AliasTest {
 
         public AliasPojo2 getPojo() {
             return this.aliasPojo2;
+        }
+
+        public List<Pojo> getPojos() {
+            return null;
+        }
+
+        public List<Pojo> getLinkedPojos() {
+            return this.pojos;
         }
     }
 
