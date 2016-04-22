@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This manager handles all registered registeredConverters.
+ * This manager handles all registered converters.
  *
  * @author Thibault Meyer
  * @version 16.03.22
@@ -80,6 +80,7 @@ public final class PartializeConverterManager {
      *
      * @param clazz The class of the object to convert
      * @return The converter, otherwise, {@code null}
+     * @since 16.03.22
      */
     public Converter getConverter(final Class clazz) {
         return this.registeredConverters.get(clazz);
