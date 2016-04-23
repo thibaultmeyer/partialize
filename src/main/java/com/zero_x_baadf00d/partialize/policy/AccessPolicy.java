@@ -24,7 +24,7 @@
 package com.zero_x_baadf00d.partialize.policy;
 
 /**
- * AccessPolicy.
+ * Handle access information.
  *
  * @author Thibault Meyer
  * @version 16.02.21

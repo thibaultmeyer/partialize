@@ -39,7 +39,7 @@ import java.util.Map;
 public final class PartializeConverterManager {
 
     /**
-     * Handle to current enabled registeredConverters.
+     * Handle to current enabled converters.
      *
      * @since 16.03.22
      */
@@ -65,7 +65,7 @@ public final class PartializeConverterManager {
     }
 
     /**
-     * Register new converter to Partialize.
+     * Register a new converter to Partialize.
      *
      * @param converter The converter to register
      * @since 16.03.22
@@ -75,7 +75,7 @@ public final class PartializeConverterManager {
     }
 
     /**
-     * Register new registeredConverters to Partialize.
+     * Register new converters to Partialize.
      *
      * @param converters A list of registeredConverters to register
      * @since 16.03.22
@@ -87,7 +87,7 @@ public final class PartializeConverterManager {
     }
 
     /**
-     * Register new registeredConverters to Partialize.
+     * Register new converters to Partialize.
      *
      * @param converters A list of registeredConverters to register
      * @since 16.03.22
