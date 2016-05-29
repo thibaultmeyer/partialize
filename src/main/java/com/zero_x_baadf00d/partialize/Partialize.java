@@ -286,14 +286,14 @@ public class Partialize {
         } else if (object instanceof Boolean) {
             partialObject.put(aliasField, (Boolean) object);
         } else if (object instanceof Collection<?>) {
-            final ArrayNode partialArray = partialObject.putArray(field);
+            final ArrayNode partialArray = partialObject.putArray(aliasField);
             if (((Collection<?>) object).size() > 0) {
                 for (final Object o : (Collection<?>) object) {
                     this.internalBuild(depth, aliasField, field, args, partialArray, o.getClass(), o);
                 }
             }
         } else if (object instanceof Map<?, ?>) {
-            this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
+            this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(aliasField));
         } else if (object instanceof Enum) {
             final String tmp = object.toString();
             try {
@@ -306,7 +306,7 @@ public class Partialize {
             if (converter != null) {
                 converter.convert(aliasField, object, partialObject);
             } else {
-                this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(field));
+                this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(aliasField));
             }
         }
     }
