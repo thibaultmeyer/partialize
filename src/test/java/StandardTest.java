@@ -40,7 +40,7 @@ import java.util.Map;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.03.22
+ * @version 16.09.27
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -177,6 +177,24 @@ public class StandardTest {
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
         Assert.assertNotNull(result);
         Assert.assertFalse(result.has("isActive"));
+    }
+
+    /**
+     * @since 16.09.27
+     */
+    @Test
+    public void standardTest006() {
+        this.initializePojo();
+        final String fields = "attributes(boolean,*)";
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.has("attributes"));
+        Assert.assertTrue(result.get("attributes").has("boolean"));
+        Assert.assertTrue(result.get("attributes").has("null"));
+        Assert.assertTrue(result.get("attributes").has("string"));
+        Assert.assertTrue(result.get("attributes").has("double"));
+        Assert.assertTrue(result.get("attributes").has("integer"));
     }
 
     /**

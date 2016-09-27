@@ -169,8 +169,8 @@ public class BasicTest {
      * @since 16.01.18
      */
     @Partialize(
-            allowedFields = {"uid", "email", "isDefault"},
-            defaultFields = "uid"
+        allowedFields = {"uid", "email", "isDefault"},
+        defaultFields = "uid"
     )
     public static class EmailPojo {
 
@@ -220,8 +220,8 @@ public class BasicTest {
      * @since 16.01.18
      */
     @Partialize(
-            allowedFields = {"uid", "firstName", "lastName", "emails"},
-            defaultFields = {"uid", "firstName", "lastName"}
+        allowedFields = {"uid", "firstName", "lastName", "emails"},
+        defaultFields = {"uid", "firstName", "lastName"}
     )
     public static class AccountPojo {
 
