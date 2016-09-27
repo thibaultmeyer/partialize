@@ -37,7 +37,7 @@ import java.util.UUID;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.01.29
+ * @version 16.09.27
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -159,6 +159,22 @@ public class BasicTest {
         Assert.assertTrue(result.get("emails").get(0).has("uid"));
         Assert.assertFalse(result.get("emails").get(0).has("id"));
         Assert.assertEquals(this.account.getEmails().get(0).getUid().toString(), result.get("emails").get(0).get("uid").asText());
+    }
+
+    /**
+     * @since 16.09.27
+     */
+    @Test
+    public void basicTest005() {
+        this.initializePojo();
+        this.account.setEmails(null);
+        final String fields = "emails";
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
+
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.has("emails"));
+        Assert.assertTrue(result.get("emails").isNull());
     }
 
     /**
