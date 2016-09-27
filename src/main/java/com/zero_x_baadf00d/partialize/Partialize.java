@@ -23,6 +23,7 @@
  */
 package com.zero_x_baadf00d.partialize;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
@@ -233,6 +234,8 @@ public class Partialize {
             partialArray.add(object.toString());
         } else if (object instanceof Boolean) {
             partialArray.add((Boolean) object);
+        } else if (object instanceof JsonNode) {
+            partialArray.addPOJO(object);
         } else if (object instanceof Collection<?>) {
             final ArrayNode anotherPartialArray = partialArray.addArray();
             if (((Collection<?>) object).size() > 0) {
@@ -285,6 +288,8 @@ public class Partialize {
             partialObject.put(aliasField, object.toString());
         } else if (object instanceof Boolean) {
             partialObject.put(aliasField, (Boolean) object);
+        } else if (object instanceof JsonNode) {
+            partialObject.putPOJO(aliasField, object);
         } else if (object instanceof Collection<?>) {
             final ArrayNode partialArray = partialObject.putArray(aliasField);
             if (((Collection<?>) object).size() > 0) {
