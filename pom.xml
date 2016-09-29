@@ -6,7 +6,7 @@
 
     <groupId>com.zero_x_baadf00d</groupId>
     <artifactId>partialize</artifactId>
-    <version>16.09</version>
+    <version>16.10</version>
     <packaging>jar</packaging>
     <name>Partialize</name>
     <description>JSON partial responses for Java</description>
