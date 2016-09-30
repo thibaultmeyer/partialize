@@ -43,7 +43,7 @@ public class StaticTest {
      * @since 16.01.18
      */
     @Test
-    public void standardTest001() {
+    public void staticTest001() {
         final String fields = "buildDate";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, StaticPojo.class);
@@ -56,7 +56,7 @@ public class StaticTest {
      * @since 16.01.18
      */
     @Test
-    public void standardTest002() {
+    public void staticTest002() {
         final MixedPojo mixedPojo = new MixedPojo();
         final String fields = "number,42,null";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
