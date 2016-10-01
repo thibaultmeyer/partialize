@@ -37,7 +37,7 @@ import java.util.UUID;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.01.29
+ * @version 16.09.27
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -162,6 +162,22 @@ public class BasicTest {
     }
 
     /**
+     * @since 16.09.27
+     */
+    @Test
+    public void basicTest005() {
+        this.initializePojo();
+        this.account.setEmails(null);
+        final String fields = "emails";
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
+
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.has("emails"));
+        Assert.assertTrue(result.get("emails").isNull());
+    }
+
+    /**
      * EmailPojo.
      *
      * @author Thibault Meyer
@@ -169,8 +185,8 @@ public class BasicTest {
      * @since 16.01.18
      */
     @Partialize(
-            allowedFields = {"uid", "email", "isDefault"},
-            defaultFields = "uid"
+        allowedFields = {"uid", "email", "isDefault"},
+        defaultFields = "uid"
     )
     public static class EmailPojo {
 
@@ -220,8 +236,8 @@ public class BasicTest {
      * @since 16.01.18
      */
     @Partialize(
-            allowedFields = {"uid", "firstName", "lastName", "emails"},
-            defaultFields = {"uid", "firstName", "lastName"}
+        allowedFields = {"uid", "firstName", "lastName", "emails"},
+        defaultFields = {"uid", "firstName", "lastName"}
     )
     public static class AccountPojo {
 

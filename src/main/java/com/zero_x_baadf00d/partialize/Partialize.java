@@ -23,6 +23,7 @@
  */
 package com.zero_x_baadf00d.partialize;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ContainerNode;
@@ -45,7 +46,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 16.03.22
+ * @version 16.09.27
  * @since 16.01.18
  */
 public class Partialize {
@@ -233,6 +234,8 @@ public class Partialize {
             partialArray.add(object.toString());
         } else if (object instanceof Boolean) {
             partialArray.add((Boolean) object);
+        } else if (object instanceof JsonNode) {
+            partialArray.addPOJO(object);
         } else if (object instanceof Collection<?>) {
             final ArrayNode anotherPartialArray = partialArray.addArray();
             if (((Collection<?>) object).size() > 0) {
@@ -285,6 +288,8 @@ public class Partialize {
             partialObject.put(aliasField, object.toString());
         } else if (object instanceof Boolean) {
             partialObject.put(aliasField, (Boolean) object);
+        } else if (object instanceof JsonNode) {
+            partialObject.putPOJO(aliasField, object);
         } else if (object instanceof Collection<?>) {
             final ArrayNode partialArray = partialObject.putArray(aliasField);
             if (((Collection<?>) object).size() > 0) {
@@ -361,17 +366,17 @@ public class Partialize {
                 }
                 if (defaultFields.isEmpty()) {
                     defaultFields = allowedFields.stream()
-                            .map(f -> {
-                                if (this.aliases != null && this.aliases.containsValue(f)) {
-                                    for (Map.Entry<String, String> e : this.aliases.entrySet()) {
-                                        if (e.getValue().compareToIgnoreCase(f) == 0) {
-                                            return e.getKey();
-                                        }
+                        .map(f -> {
+                            if (this.aliases != null && this.aliases.containsValue(f)) {
+                                for (Map.Entry<String, String> e : this.aliases.entrySet()) {
+                                    if (e.getValue().compareToIgnoreCase(f) == 0) {
+                                        return e.getKey();
                                     }
                                 }
-                                return f;
-                            })
-                            .collect(Collectors.toList());
+                            }
+                            return f;
+                        })
+                        .collect(Collectors.toList());
                 }
                 if (fields == null || fields.length() == 0) {
                     fields = defaultFields.stream().collect(Collectors.joining(","));
@@ -389,18 +394,18 @@ public class Partialize {
                             sb.append(scanner.next());
                         }
                         final Scanner newScanner = new Scanner(allowedFields.stream()
-                                .filter(f -> !closedFields.contains(f))
-                                .map(f -> {
-                                    if (this.aliases != null && this.aliases.containsValue(f)) {
-                                        for (Map.Entry<String, String> e : this.aliases.entrySet()) {
-                                            if (e.getValue().compareToIgnoreCase(f) == 0) {
-                                                return e.getKey();
-                                            }
+                            .filter(f -> !closedFields.contains(f))
+                            .map(f -> {
+                                if (this.aliases != null && this.aliases.containsValue(f)) {
+                                    for (Map.Entry<String, String> e : this.aliases.entrySet()) {
+                                        if (e.getValue().compareToIgnoreCase(f) == 0) {
+                                            return e.getKey();
                                         }
                                     }
-                                    return f;
-                                })
-                                .collect(Collectors.joining(",")) + sb.toString());
+                                }
+                                return f;
+                            })
+                            .collect(Collectors.joining(",")) + sb.toString());
                         newScanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                         scanner.close();
                         scanner = newScanner;
@@ -441,23 +446,37 @@ public class Partialize {
                 }
                 return partialObject;
             } else if (instance instanceof Map<?, ?>) {
-                if (fields == null || fields.isEmpty()) {
+                if (fields == null || fields.isEmpty() || fields.compareTo("*") == 0) {
                     for (Map.Entry<?, ?> e : ((Map<?, ?>) instance).entrySet()) {
                         this.internalBuild(
-                                depth,
-                                String.valueOf(e.getKey()),
-                                String.valueOf(e.getKey()),
-                                null,
-                                partialObject,
-                                e.getValue() == null ? Object.class : e.getValue().getClass(),
-                                e.getValue()
+                            depth,
+                            String.valueOf(e.getKey()),
+                            String.valueOf(e.getKey()),
+                            null,
+                            partialObject,
+                            e.getValue() == null ? Object.class : e.getValue().getClass(),
+                            e.getValue()
                         );
                     }
                 } else {
                     final Map<?, ?> tmpMap = (Map<?, ?>) instance;
                     for (final String k : fields.split(",")) {
-                        final Object o = tmpMap.get(k);
-                        this.internalBuild(depth, k, k, null, partialObject, o == null ? Object.class : o.getClass(), o);
+                        if (k.compareTo("*") != 0) {
+                            final Object o = tmpMap.get(k);
+                            this.internalBuild(depth, k, k, null, partialObject, o == null ? Object.class : o.getClass(), o);
+                        } else {
+                            for (Map.Entry<?, ?> e : ((Map<?, ?>) instance).entrySet()) {
+                                this.internalBuild(
+                                    depth,
+                                    String.valueOf(e.getKey()),
+                                    String.valueOf(e.getKey()),
+                                    null,
+                                    partialObject,
+                                    e.getValue() == null ? Object.class : e.getValue().getClass(),
+                                    e.getValue()
+                                );
+                            }
+                        }
                     }
                 }
             } else {
