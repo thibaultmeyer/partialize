@@ -129,7 +129,7 @@ public class Partialize {
     }
 
     /**
-     * Defines a method that will be called throughout the process
+     * Defines a field that will be called throughout the process
      * to verify whether the requested element can be integrated or
      * not to the partial JSON document.
      *

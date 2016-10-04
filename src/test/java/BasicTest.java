@@ -25,6 +25,7 @@
 import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -37,7 +38,7 @@ import java.util.UUID;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.09.27
+ * @version 16.10.04
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -55,7 +56,8 @@ public class BasicTest {
      *
      * @since 16.01.18
      */
-    private void initializePojo() {
+    @Before
+    public void initializePojo() {
         if (this.account == null) {
             this.account = new AccountPojo();
             this.account.setId(1);
@@ -87,7 +89,6 @@ public class BasicTest {
      */
     @Test
     public void basicTest001() {
-        this.initializePojo();
         final String fields = "firstName,lastName,emails(uid)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
@@ -106,7 +107,6 @@ public class BasicTest {
      */
     @Test
     public void basicTest002() {
-        this.initializePojo();
         final String fields = "*";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
@@ -123,7 +123,6 @@ public class BasicTest {
      */
     @Test
     public void basicTest003() {
-        this.initializePojo();
         final String fields = "emails(*),firstName";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
@@ -144,7 +143,6 @@ public class BasicTest {
      */
     @Test
     public void basicTest004() {
-        this.initializePojo();
         final String fields = "*,emails(uid,email)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
@@ -166,7 +164,6 @@ public class BasicTest {
      */
     @Test
     public void basicTest005() {
-        this.initializePojo();
         this.account.setEmails(null);
         final String fields = "emails";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();

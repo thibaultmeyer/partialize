@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import org.joda.time.DateTime;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -40,7 +41,7 @@ import java.util.Map;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.09.27
+ * @version 16.10.04
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -65,7 +66,8 @@ public class StandardTest {
      *
      * @since 16.01.18
      */
-    private void initializePojo() {
+    @Before
+    public void initializePojo() {
         if (this.bankAccount == null) {
             com.zero_x_baadf00d.partialize.PartializeConverterManager.getInstance().registerConverter(new JodaDateTimeConverter());
 
@@ -96,7 +98,6 @@ public class StandardTest {
      */
     @Test
     public void standardTest001() {
-        this.initializePojo();
         final String fields = "displayName,amount,createDate";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
@@ -112,7 +113,6 @@ public class StandardTest {
      */
     @Test
     public void standardTest002() {
-        this.initializePojo();
         final String fields = "displayName,listOfList,createDate";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
@@ -134,7 +134,6 @@ public class StandardTest {
      */
     @Test
     public void standardTest003() {
-        this.initializePojo();
         final String fields = "attributes";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
@@ -152,7 +151,6 @@ public class StandardTest {
      */
     @Test
     public void standardTest004() {
-        this.initializePojo();
         final String fields = "attributes(boolean,integer),displayName";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
@@ -171,7 +169,6 @@ public class StandardTest {
      */
     @Test
     public void standardTest005() {
-        this.initializePojo();
         final String fields = "isActive";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
@@ -184,7 +181,6 @@ public class StandardTest {
      */
     @Test
     public void standardTest006() {
-        this.initializePojo();
         final String fields = "attributes(boolean,*)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);

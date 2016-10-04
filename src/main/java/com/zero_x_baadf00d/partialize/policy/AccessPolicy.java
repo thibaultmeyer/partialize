@@ -27,7 +27,7 @@ package com.zero_x_baadf00d.partialize.policy;
  * Handle access information.
  *
  * @author Thibault Meyer
- * @version 16.02.21
+ * @version 16.10.04
  * @since 16.02.13
  */
 public class AccessPolicy {
@@ -47,23 +47,23 @@ public class AccessPolicy {
     public Object instance;
 
     /**
-     * The method that will be called.
+     * The field that will be accessed.
      *
      * @since 16.02.13
      */
-    public String method;
+    public String field;
 
     /**
      * Build a standard instance.
      *
      * @param clazz    The class type
      * @param instance The class instance
-     * @param method   The method that will be called
+     * @param field    The field that will be accessed
      * @since 16.02.13
      */
-    public AccessPolicy(final Class<?> clazz, final Object instance, final String method) {
+    public AccessPolicy(final Class<?> clazz, final Object instance, final String field) {
         this.clazz = clazz;
         this.instance = instance;
-        this.method = method;
+        this.field = field;
     }
 }
