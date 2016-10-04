@@ -33,7 +33,7 @@ import java.util.Map;
  * This manager handles all registered converters.
  *
  * @author Thibault Meyer
- * @version 16.03.22
+ * @version 16.10.04
  * @since 16.03.22
  */
 public final class PartializeConverterManager {
@@ -96,6 +96,25 @@ public final class PartializeConverterManager {
         for (final Converter converter : converters) {
             this.registeredConverters.putIfAbsent(converter.getManagedObjectClass(), converter);
         }
+    }
+
+    /**
+     * Unregister all converters.
+     *
+     * @since 16.10.04
+     */
+    public void removeAllConverters() {
+        this.registeredConverters.clear();
+    }
+
+    /**
+     * Get the number of registered converters.
+     *
+     * @return The number of registered converters
+     * @since 16.10.04
+     */
+    public int count() {
+        return this.registeredConverters.size();
     }
 
     /**
