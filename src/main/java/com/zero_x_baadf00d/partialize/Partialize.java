@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.zero_x_baadf00d.partialize.converter.Converter;
 import com.zero_x_baadf00d.partialize.policy.AccessPolicy;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 16.09.27
+ * @version 16.12.05
  * @since 16.01.18
  */
 public class Partialize {
@@ -345,26 +346,53 @@ public class Partialize {
      */
     private ObjectNode buildPartialObject(final int depth, String fields, final Class<?> clazz, final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
+            final ObjectType objectType;
             if (clazz.isAnnotationPresent(com.zero_x_baadf00d.partialize.annotation.Partialize.class)) {
+                objectType = ObjectType.ANNOTATED;
+            } else if (instance instanceof Map<?, ?>) {
+                objectType = ObjectType.MAP;
+            } else {
+                objectType = ObjectType.NOT_SUPPORTED;
+            }
+
+            if (objectType != ObjectType.NOT_SUPPORTED) {
                 final List<String> closedFields = new ArrayList<>();
-                List<String> allowedFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).allowedFields());
-                List<String> defaultFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).defaultFields());
-                if (allowedFields.isEmpty()) {
-                    allowedFields = new ArrayList<>();
-                    for (final Method m : clazz.getDeclaredMethods()) {
-                        final String methodName = m.getName();
-                        if (methodName.startsWith("get") || methodName.startsWith("has")) {
-                            final char[] c = methodName.substring(3).toCharArray();
-                            c[0] = Character.toLowerCase(c[0]);
-                            allowedFields.add(new String(c));
-                        } else if (methodName.startsWith("is")) {
-                            final char[] c = methodName.substring(2).toCharArray();
-                            c[0] = Character.toLowerCase(c[0]);
-                            allowedFields.add(new String(c));
+
+                List<String> allowedFields;
+                List<String> defaultFields = null;
+                switch (objectType) {
+                    case ANNOTATED:
+                        allowedFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).allowedFields());
+                        defaultFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).defaultFields());
+
+                        if (allowedFields.isEmpty()) {
+                            allowedFields = new ArrayList<>();
+                            for (final Method m : clazz.getDeclaredMethods()) {
+                                final String methodName = m.getName();
+                                if (methodName.startsWith("get") || methodName.startsWith("has")) {
+                                    final char[] c = methodName.substring(3).toCharArray();
+                                    c[0] = Character.toLowerCase(c[0]);
+                                    allowedFields.add(new String(c));
+                                } else if (methodName.startsWith("is")) {
+                                    final char[] c = methodName.substring(2).toCharArray();
+                                    c[0] = Character.toLowerCase(c[0]);
+                                    allowedFields.add(new String(c));
+                                }
+                            }
                         }
-                    }
+
+                        break;
+                    case MAP:
+                        allowedFields = new ArrayList<>();
+                        for (Map.Entry<?, ?> e : ((Map<?, ?>) instance).entrySet()) {
+                            allowedFields.add(String.valueOf(e.getKey()));
+                        }
+                        break;
+                    default:
+                        throw new NotImplementedException("Can't convert " + clazz.getCanonicalName());
                 }
-                if (defaultFields.isEmpty()) {
+
+                if (defaultFields == null || defaultFields.isEmpty()) {
                     defaultFields = allowedFields.stream()
                         .map(f -> {
                             if (this.aliases != null && this.aliases.containsValue(f)) {
@@ -427,55 +455,33 @@ public class Partialize {
                             continue;
                         }
                         closedFields.add(aliasField);
-                        try {
-                            final Method method = clazz.getMethod("get" + WordUtils.capitalize(field));
-                            final Object object = method.invoke(instance);
-                            this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
-                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {
-                            try {
-                                final Method method = clazz.getMethod(field);
-                                final Object object = method.invoke(instance);
-                                this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
-                            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-                                if (this.exceptionConsumer != null) {
-                                    this.exceptionConsumer.accept(ex);
+                        switch (objectType) {
+                            case ANNOTATED:
+                                try {
+                                    final Method method = clazz.getMethod("get" + WordUtils.capitalize(field));
+                                    final Object object = method.invoke(instance);
+                                    this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
+                                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {
+                                    try {
+                                        final Method method = clazz.getMethod(field);
+                                        final Object object = method.invoke(instance);
+                                        this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
+                                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                                        if (this.exceptionConsumer != null) {
+                                            this.exceptionConsumer.accept(ex);
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                    }
-                }
-                return partialObject;
-            } else if (instance instanceof Map<?, ?>) {
-                if (fields == null || fields.isEmpty() || fields.compareTo("*") == 0) {
-                    for (Map.Entry<?, ?> e : ((Map<?, ?>) instance).entrySet()) {
-                        this.internalBuild(
-                            depth,
-                            String.valueOf(e.getKey()),
-                            String.valueOf(e.getKey()),
-                            null,
-                            partialObject,
-                            e.getValue() == null ? Object.class : e.getValue().getClass(),
-                            e.getValue()
-                        );
-                    }
-                } else {
-                    final Map<?, ?> tmpMap = (Map<?, ?>) instance;
-                    for (final String k : fields.split(",")) {
-                        if (k.compareTo("*") != 0) {
-                            final Object o = tmpMap.get(k);
-                            this.internalBuild(depth, k, k, null, partialObject, o == null ? Object.class : o.getClass(), o);
-                        } else {
-                            for (Map.Entry<?, ?> e : ((Map<?, ?>) instance).entrySet()) {
-                                this.internalBuild(
-                                    depth,
-                                    String.valueOf(e.getKey()),
-                                    String.valueOf(e.getKey()),
-                                    null,
-                                    partialObject,
-                                    e.getValue() == null ? Object.class : e.getValue().getClass(),
-                                    e.getValue()
-                                );
-                            }
+                                break;
+                            case MAP:
+                                final Map<?, ?> tmpMap = (Map<?, ?>) instance;
+                                if (tmpMap.containsKey(field)) {
+                                    final Object object = tmpMap.get(field);
+                                    this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
+                                }
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
