@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 16.12.05
+ * @version 16.12.06
  * @since 16.01.18
  */
 public class Partialize {
@@ -198,7 +198,7 @@ public class Partialize {
             final ArrayNode partialArray = this.objectMapper.createArrayNode();
             if (((Collection<?>) instance).size() > 0) {
                 for (final Object o : (Collection<?>) instance) {
-                    partialArray.add(this.buildPartialObject(0, fields, o.getClass(), o));
+                    partialArray.add(this.buildPartialObject(-1, fields, o.getClass(), o));
                 }
             }
             return partialArray;
@@ -221,42 +221,44 @@ public class Partialize {
      */
     private void internalBuild(final int depth, final String aliasField, final String field, final String args,
                                final ArrayNode partialArray, final Class<?> clazz, final Object object) {
-        if (object == null) {
-            partialArray.addNull();
-        } else if (object instanceof String) {
-            partialArray.add((String) object);
-        } else if (object instanceof Integer) {
-            partialArray.add((Integer) object);
-        } else if (object instanceof Long) {
-            partialArray.add((Long) object);
-        } else if (object instanceof Double) {
-            partialArray.add((Double) object);
-        } else if (object instanceof UUID) {
-            partialArray.add(object.toString());
-        } else if (object instanceof Boolean) {
-            partialArray.add((Boolean) object);
-        } else if (object instanceof JsonNode) {
-            partialArray.addPOJO(object);
-        } else if (object instanceof Collection<?>) {
-            final ArrayNode anotherPartialArray = partialArray.addArray();
-            if (((Collection<?>) object).size() > 0) {
-                for (final Object o : (Collection<?>) object) {
-                    this.internalBuild(depth, aliasField, field, args, anotherPartialArray, o.getClass(), o);
+        if (depth < this.maximumDepth) {
+            if (object == null) {
+                partialArray.addNull();
+            } else if (object instanceof String) {
+                partialArray.add((String) object);
+            } else if (object instanceof Integer) {
+                partialArray.add((Integer) object);
+            } else if (object instanceof Long) {
+                partialArray.add((Long) object);
+            } else if (object instanceof Double) {
+                partialArray.add((Double) object);
+            } else if (object instanceof UUID) {
+                partialArray.add(object.toString());
+            } else if (object instanceof Boolean) {
+                partialArray.add((Boolean) object);
+            } else if (object instanceof JsonNode) {
+                partialArray.addPOJO(object);
+            } else if (object instanceof Collection<?>) {
+                final ArrayNode anotherPartialArray = partialArray.addArray();
+                if (((Collection<?>) object).size() > 0) {
+                    for (final Object o : (Collection<?>) object) {
+                        this.internalBuild(depth + 1, aliasField, field, args, anotherPartialArray, o.getClass(), o);
+                    }
                 }
-            }
-        } else if (object instanceof Enum) {
-            final String tmp = object.toString();
-            try {
-                partialArray.add(Integer.valueOf(tmp));
-            } catch (NumberFormatException ignore) {
-                partialArray.add(tmp);
-            }
-        } else {
-            final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
-            if (converter != null) {
-                converter.convert(aliasField, object, partialArray);
+            } else if (object instanceof Enum) {
+                final String tmp = object.toString();
+                try {
+                    partialArray.add(Integer.valueOf(tmp));
+                } catch (NumberFormatException ignore) {
+                    partialArray.add(tmp);
+                }
             } else {
-                partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
+                final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
+                if (converter != null) {
+                    converter.convert(aliasField, object, partialArray);
+                } else {
+                    partialArray.add(this.buildPartialObject(depth + 1, args, object.getClass(), object));
+                }
             }
         }
     }
@@ -275,44 +277,46 @@ public class Partialize {
      */
     private void internalBuild(final int depth, final String aliasField, final String field, final String args,
                                final ObjectNode partialObject, final Class<?> clazz, final Object object) {
-        if (object == null) {
-            partialObject.putNull(aliasField);
-        } else if (object instanceof String) {
-            partialObject.put(aliasField, (String) object);
-        } else if (object instanceof Integer) {
-            partialObject.put(aliasField, (Integer) object);
-        } else if (object instanceof Long) {
-            partialObject.put(aliasField, (Long) object);
-        } else if (object instanceof Double) {
-            partialObject.put(aliasField, (Double) object);
-        } else if (object instanceof UUID) {
-            partialObject.put(aliasField, object.toString());
-        } else if (object instanceof Boolean) {
-            partialObject.put(aliasField, (Boolean) object);
-        } else if (object instanceof JsonNode) {
-            partialObject.putPOJO(aliasField, object);
-        } else if (object instanceof Collection<?>) {
-            final ArrayNode partialArray = partialObject.putArray(aliasField);
-            if (((Collection<?>) object).size() > 0) {
-                for (final Object o : (Collection<?>) object) {
-                    this.internalBuild(depth, aliasField, field, args, partialArray, o.getClass(), o);
+        if (depth <= this.maximumDepth) {
+            if (object == null) {
+                partialObject.putNull(aliasField);
+            } else if (object instanceof String) {
+                partialObject.put(aliasField, (String) object);
+            } else if (object instanceof Integer) {
+                partialObject.put(aliasField, (Integer) object);
+            } else if (object instanceof Long) {
+                partialObject.put(aliasField, (Long) object);
+            } else if (object instanceof Double) {
+                partialObject.put(aliasField, (Double) object);
+            } else if (object instanceof UUID) {
+                partialObject.put(aliasField, object.toString());
+            } else if (object instanceof Boolean) {
+                partialObject.put(aliasField, (Boolean) object);
+            } else if (object instanceof JsonNode) {
+                partialObject.putPOJO(aliasField, object);
+            } else if (object instanceof Collection<?>) {
+                final ArrayNode partialArray = partialObject.putArray(aliasField);
+                if (((Collection<?>) object).size() > 0) {
+                    for (final Object o : (Collection<?>) object) {
+                        this.internalBuild(depth, aliasField, field, args, partialArray, o.getClass(), o);
+                    }
                 }
-            }
-        } else if (object instanceof Map<?, ?>) {
-            this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(aliasField));
-        } else if (object instanceof Enum) {
-            final String tmp = object.toString();
-            try {
-                partialObject.put(aliasField, Integer.valueOf(tmp));
-            } catch (NumberFormatException ignore) {
-                partialObject.put(aliasField, tmp);
-            }
-        } else {
-            final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
-            if (converter != null) {
-                converter.convert(aliasField, object, partialObject);
-            } else {
+            } else if (object instanceof Map<?, ?>) {
                 this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(aliasField));
+            } else if (object instanceof Enum) {
+                final String tmp = object.toString();
+                try {
+                    partialObject.put(aliasField, Integer.valueOf(tmp));
+                } catch (NumberFormatException ignore) {
+                    partialObject.put(aliasField, tmp);
+                }
+            } else {
+                final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
+                if (converter != null) {
+                    converter.convert(aliasField, object, partialObject);
+                } else {
+                    this.buildPartialObject(depth + 1, args, object.getClass(), object, partialObject.putObject(aliasField));
+                }
             }
         }
     }
@@ -328,7 +332,7 @@ public class Partialize {
      * @return A JSON Object
      * @since 16.01.18
      */
-    private ObjectNode buildPartialObject(final int depth, final String fields, final Class<?> clazz, final Object instance) {
+    private ContainerNode buildPartialObject(final int depth, final String fields, final Class<?> clazz, final Object instance) {
         return this.buildPartialObject(depth, fields, clazz, instance, this.objectMapper.createObjectNode());
     }
 
@@ -344,13 +348,21 @@ public class Partialize {
      * @return A JSON Object
      * @since 16.01.18
      */
-    private ObjectNode buildPartialObject(final int depth, String fields, final Class<?> clazz, final Object instance, final ObjectNode partialObject) {
+    private ContainerNode buildPartialObject(final int depth, String fields, final Class<?> clazz, final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
             final ObjectType objectType;
             if (clazz.isAnnotationPresent(com.zero_x_baadf00d.partialize.annotation.Partialize.class)) {
                 objectType = ObjectType.ANNOTATED;
             } else if (instance instanceof Map<?, ?>) {
                 objectType = ObjectType.MAP;
+            } else if (instance instanceof Collection<?>) {
+                final ArrayNode partialArray = this.objectMapper.createArrayNode();
+                if (((Collection<?>) instance).size() > 0) {
+                    for (final Object o : (Collection<?>) instance) {
+                        this.internalBuild(depth + 1, null, null, null, partialArray, o.getClass(), o);
+                    }
+                }
+                return partialArray;
             } else {
                 objectType = ObjectType.NOT_SUPPORTED;
             }

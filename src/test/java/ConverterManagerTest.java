@@ -24,13 +24,13 @@
 
 import com.zero_x_baadf00d.partialize.PartializeConverterManager;
 import com.zero_x_baadf00d.partialize.converter.Converter;
+import converters.BigDecimalConverter;
+import converters.JodaDateTimeConverter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import converters.BigDecimalConverter;
-import converters.JodaDateTimeConverter;
 
 import java.util.ArrayList;
 import java.util.List;
