@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ import java.util.UUID;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 16.10.04
+ * @version 17.06.28
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -68,11 +69,20 @@ public class BasicTest {
             final List<EmailPojo> emails = new ArrayList<>();
             this.account.setEmails(emails);
 
+            final EmailAttributePojo attributePojo_1 = new EmailAttributePojo();
+            attributePojo_1.setKey("key_1");
+            attributePojo_1.setValue("hello");
+            final EmailAttributePojo attributePojo_2 = new EmailAttributePojo();
+            attributePojo_2.setKey("key_2");
+            attributePojo_2.setValue("world");
+
             EmailPojo email = new EmailPojo();
             email.setId(1);
             email.setUid(UUID.randomUUID());
             email.setEmail("john.smith@domain.local");
             email.setDefault(true);
+            email.setDead(false);
+            email.setAttributes(Arrays.asList(attributePojo_1, attributePojo_2));
             emails.add(email);
 
             email = new EmailPojo();
@@ -175,14 +185,61 @@ public class BasicTest {
     }
 
     /**
+     * @since 17.06.28
+     */
+    @Test
+    public void basicTest006() {
+        final String fields = "*";
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        final ContainerNode result = partialize.buildPartialObject(fields, EmailPojo.class, this.account.emails.get(0));
+        System.err.println(result);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.has("dead"));
+        Assert.assertFalse(result.get("dead").isNull());
+        Assert.assertTrue(result.get("dead").isBoolean());
+        Assert.assertFalse(result.get("dead").asBoolean());
+    }
+
+    /**
+     * EmailAttributePojo.
+     *
+     * @author Thibault Meyer
+     * @version 17.06.28
+     * @since 17.06.28
+     */
+    @Partialize(
+        allowedFields = {"key", "value"}
+    )
+    public static class EmailAttributePojo {
+        private String key;
+        private String value;
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    /**
      * EmailPojo.
      *
      * @author Thibault Meyer
-     * @version 16.01.18
+     * @version 17.06.28
      * @since 16.01.18
      */
     @Partialize(
-        allowedFields = {"uid", "email", "isDefault"},
+        allowedFields = {"uid", "email", "isDefault", "dead", "attributes"},
         defaultFields = "uid"
     )
     public static class EmailPojo {
@@ -191,6 +248,8 @@ public class BasicTest {
         private UUID uid;
         private String email;
         private boolean isDefault;
+        private boolean dead;
+        private List<EmailAttributePojo> attributes;
 
         public int getId() {
             return this.id;
@@ -222,6 +281,26 @@ public class BasicTest {
 
         public void setDefault(boolean aDefault) {
             this.isDefault = aDefault;
+        }
+
+        public boolean isDead() {
+            return this.dead;
+        }
+
+        public void setDead(boolean dead) {
+            this.dead = dead;
+        }
+
+        public boolean hasAttributes() {
+            return attributes != null && !attributes.isEmpty();
+        }
+
+        public List<EmailAttributePojo> getAttributes() {
+            return attributes;
+        }
+
+        public void setAttributes(List<EmailAttributePojo> attributes) {
+            this.attributes = attributes;
         }
     }
 

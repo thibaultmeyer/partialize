@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 16.12.06
+ * @version 17.06.28
  * @since 16.01.18
  */
 public class Partialize {
@@ -65,6 +65,13 @@ public class Partialize {
      * @since 16.01.18
      */
     private static final String SCANNER_DELIMITER = ",";
+
+    /**
+     * Method prefixes.
+     *
+     * @since 17.06.28
+     */
+    private static final String[] METHOD_PREFIXES = {"get", "is", "has", "can"};
 
     /**
      * Pattern used to extract arguments.
@@ -332,7 +339,8 @@ public class Partialize {
      * @return A JSON Object
      * @since 16.01.18
      */
-    private ContainerNode buildPartialObject(final int depth, final String fields, final Class<?> clazz, final Object instance) {
+    private ContainerNode buildPartialObject(final int depth, final String fields,
+                                             final Class<?> clazz, final Object instance) {
         return this.buildPartialObject(depth, fields, clazz, instance, this.objectMapper.createObjectNode());
     }
 
@@ -348,7 +356,8 @@ public class Partialize {
      * @return A JSON Object
      * @since 16.01.18
      */
-    private ContainerNode buildPartialObject(final int depth, String fields, final Class<?> clazz, final Object instance, final ObjectNode partialObject) {
+    private ContainerNode buildPartialObject(final int depth, String fields, final Class<?> clazz,
+                                             final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
             final ObjectType objectType;
             if (clazz.isAnnotationPresent(com.zero_x_baadf00d.partialize.annotation.Partialize.class)) {
@@ -374,21 +383,27 @@ public class Partialize {
                 List<String> defaultFields = null;
                 switch (objectType) {
                     case ANNOTATED:
-                        allowedFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).allowedFields());
-                        defaultFields = Arrays.asList(clazz.getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class).defaultFields());
+                        allowedFields = Arrays.asList(
+                            clazz
+                                .getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class)
+                                .allowedFields()
+                        );
+                        defaultFields = Arrays.asList(
+                            clazz
+                                .getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class)
+                                .defaultFields()
+                        );
 
                         if (allowedFields.isEmpty()) {
                             allowedFields = new ArrayList<>();
                             for (final Method m : clazz.getDeclaredMethods()) {
                                 final String methodName = m.getName();
-                                if (methodName.startsWith("get") || methodName.startsWith("has")) {
-                                    final char[] c = methodName.substring(3).toCharArray();
-                                    c[0] = Character.toLowerCase(c[0]);
-                                    allowedFields.add(new String(c));
-                                } else if (methodName.startsWith("is")) {
-                                    final char[] c = methodName.substring(2).toCharArray();
-                                    c[0] = Character.toLowerCase(c[0]);
-                                    allowedFields.add(new String(c));
+                                for (final String methodPrefix : Partialize.METHOD_PREFIXES) {
+                                    if (methodName.startsWith(methodPrefix)) {
+                                        final char[] c = methodName.substring(methodPrefix.length()).toCharArray();
+                                        c[0] = Character.toLowerCase(c[0]);
+                                        allowedFields.add(new String(c));
+                                    }
                                 }
                             }
                         }
@@ -469,18 +484,22 @@ public class Partialize {
                         closedFields.add(aliasField);
                         switch (objectType) {
                             case ANNOTATED:
-                                try {
-                                    final Method method = clazz.getMethod("get" + WordUtils.capitalize(field));
-                                    final Object object = method.invoke(instance);
-                                    this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
-                                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {
+                                for (final String methodPrefix : Partialize.METHOD_PREFIXES) {
                                     try {
-                                        final Method method = clazz.getMethod(field);
+                                        final Method method = clazz.getMethod(methodPrefix + WordUtils.capitalize(field));
                                         final Object object = method.invoke(instance);
                                         this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
-                                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-                                        if (this.exceptionConsumer != null) {
-                                            this.exceptionConsumer.accept(ex);
+                                        break;
+                                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {
+                                        try {
+                                            final Method method = clazz.getMethod(field);
+                                            final Object object = method.invoke(instance);
+                                            this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
+                                            break;
+                                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                                            if (this.exceptionConsumer != null) {
+                                                this.exceptionConsumer.accept(ex);
+                                            }
                                         }
                                     }
                                 }
