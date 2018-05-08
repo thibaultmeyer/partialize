@@ -192,7 +192,6 @@ public class BasicTest {
         final String fields = "*";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         final ContainerNode result = partialize.buildPartialObject(fields, EmailPojo.class, this.account.emails.get(0));
-        System.err.println(result);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("dead"));
         Assert.assertFalse(result.get("dead").isNull());

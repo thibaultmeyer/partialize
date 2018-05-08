@@ -32,7 +32,7 @@ import com.zero_x_baadf00d.partialize.converter.Converter;
 import com.zero_x_baadf00d.partialize.policy.AccessPolicy;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.text.WordUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -283,8 +283,11 @@ public class Partialize {
      * @since 16.01.18
      */
     private void internalBuild(final int depth, final String aliasField, final String field, final String args,
-                               final ObjectNode partialObject, final Class<?> clazz, final Object object) {
+                               final ObjectNode partialObject, final Class<?> clazz, Object object) {
         if (depth <= this.maximumDepth) {
+            if (object instanceof Optional) {
+                object = ((Optional<?>) object).orElse(null);
+            }
             if (object == null) {
                 partialObject.putNull(aliasField);
             } else if (object instanceof String) {
