@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 17.06.28
+ * @version 18.05.10
  * @since 16.01.18
  */
 public class Partialize {
@@ -256,7 +256,7 @@ public class Partialize {
                 final String tmp = object.toString();
                 try {
                     partialArray.add(Integer.valueOf(tmp));
-                } catch (NumberFormatException ignore) {
+                } catch (final NumberFormatException ignore) {
                     partialArray.add(tmp);
                 }
             } else {
@@ -317,7 +317,7 @@ public class Partialize {
                 final String tmp = object.toString();
                 try {
                     partialObject.put(aliasField, Integer.valueOf(tmp));
-                } catch (NumberFormatException ignore) {
+                } catch (final NumberFormatException ignore) {
                     partialObject.put(aliasField, tmp);
                 }
             } else {
@@ -493,13 +493,13 @@ public class Partialize {
                                         final Object object = method.invoke(instance);
                                         this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
                                         break;
-                                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | NullPointerException ignore) {
+                                    } catch (final IllegalAccessException | InvocationTargetException | NoSuchMethodException | NullPointerException ignore) {
                                         try {
                                             final Method method = clazz.getMethod(field);
                                             final Object object = method.invoke(instance);
                                             this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
                                             break;
-                                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                                        } catch (final IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
                                             if (this.exceptionConsumer != null) {
                                                 this.exceptionConsumer.accept(ex);
                                             }
