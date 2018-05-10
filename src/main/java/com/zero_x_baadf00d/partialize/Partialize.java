@@ -493,7 +493,7 @@ public class Partialize {
                                         final Object object = method.invoke(instance);
                                         this.internalBuild(depth, aliasField, field, args, partialObject, clazz, object);
                                         break;
-                                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {
+                                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | NullPointerException ignore) {
                                         try {
                                             final Method method = clazz.getMethod(field);
                                             final Object object = method.invoke(instance);

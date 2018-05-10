@@ -39,7 +39,7 @@ import java.util.UUID;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 17.06.28
+ * @version 18.05.10
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -109,7 +109,10 @@ public class BasicTest {
         Assert.assertFalse(result.get("emails").get(0).has("email"));
         Assert.assertTrue(result.get("emails").has(1));
         Assert.assertFalse(result.get("emails").has(2));
-        Assert.assertEquals(this.account.getEmails().get(0).getUid().toString(), result.get("emails").get(0).get("uid").asText());
+        Assert.assertEquals(
+            this.account.getEmails().get(0).getUid().toString(),
+            result.get("emails").get(0).get("uid").asText()
+        );
     }
 
     /**
@@ -145,7 +148,10 @@ public class BasicTest {
         Assert.assertTrue(result.get("emails").get(0).has("email"));
         Assert.assertTrue(result.get("emails").get(0).has("uid"));
         Assert.assertFalse(result.get("emails").get(0).has("id"));
-        Assert.assertEquals(this.account.getEmails().get(0).getUid().toString(), result.get("emails").get(0).get("uid").asText());
+        Assert.assertEquals(
+            this.account.getEmails().get(0).getUid().toString(),
+            result.get("emails").get(0).get("uid").asText()
+        );
     }
 
     /**
@@ -166,7 +172,10 @@ public class BasicTest {
         Assert.assertTrue(result.get("emails").get(0).has("email"));
         Assert.assertTrue(result.get("emails").get(0).has("uid"));
         Assert.assertFalse(result.get("emails").get(0).has("id"));
-        Assert.assertEquals(this.account.getEmails().get(0).getUid().toString(), result.get("emails").get(0).get("uid").asText());
+        Assert.assertEquals(
+            this.account.getEmails().get(0).getUid().toString(),
+            result.get("emails").get(0).get("uid").asText()
+        );
     }
 
     /**
@@ -197,6 +206,29 @@ public class BasicTest {
         Assert.assertFalse(result.get("dead").isNull());
         Assert.assertTrue(result.get("dead").isBoolean());
         Assert.assertFalse(result.get("dead").asBoolean());
+    }
+
+    /**
+     * @since 18.05.10
+     */
+    @Test
+    public void basicTest007() {
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        final ContainerNode result = partialize.buildPartialObject(null, EmailPojo.class, this.account.emails.get(0));
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.has("uid"));
+        Assert.assertEquals(this.account.emails.get(0).uid.toString(), result.get("uid").asText());
+    }
+
+    /**
+     * @since 18.05.10
+     */
+    @Test
+    public void basicTest008() {
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        final ContainerNode result = partialize.buildPartialObject(null, EmailPojo.class, null);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.isObject());
     }
 
     /**
