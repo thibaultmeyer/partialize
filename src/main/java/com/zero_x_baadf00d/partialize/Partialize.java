@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
  * @version 18.05.10
  * @since 16.01.18
  */
+@SuppressWarnings("UnusedReturnValue")
 public class Partialize {
 
     /**
@@ -78,7 +79,7 @@ public class Partialize {
      *
      * @since 16.01.18
      */
-    private final Pattern fieldArgsPattern = Pattern.compile("([a-zA-Z0-9]{1,})\\((.+)\\)");
+    private final Pattern fieldArgsPattern = Pattern.compile("([a-zA-Z0-9]+)\\((.+)\\)");
 
     /**
      * Object mapper used to create new object nodes.
@@ -424,20 +425,11 @@ public class Partialize {
 
                 if (defaultFields == null || defaultFields.isEmpty()) {
                     defaultFields = allowedFields.stream()
-                        .map(f -> {
-                            if (this.aliases != null && this.aliases.containsValue(f)) {
-                                for (Map.Entry<String, String> e : this.aliases.entrySet()) {
-                                    if (e.getValue().compareToIgnoreCase(f) == 0) {
-                                        return e.getKey();
-                                    }
-                                }
-                            }
-                            return f;
-                        })
+                        .map(this::resolveAlias)
                         .collect(Collectors.toList());
                 }
                 if (fields == null || fields.length() == 0) {
-                    fields = defaultFields.stream().collect(Collectors.joining(","));
+                    fields = String.join(",", defaultFields);
                 }
                 Scanner scanner = new Scanner(fields);
                 scanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
@@ -453,16 +445,7 @@ public class Partialize {
                         }
                         final Scanner newScanner = new Scanner(allowedFields.stream()
                             .filter(f -> !closedFields.contains(f))
-                            .map(f -> {
-                                if (this.aliases != null && this.aliases.containsValue(f)) {
-                                    for (Map.Entry<String, String> e : this.aliases.entrySet()) {
-                                        if (e.getValue().compareToIgnoreCase(f) == 0) {
-                                            return e.getKey();
-                                        }
-                                    }
-                                }
-                                return f;
-                            })
+                            .map(this::resolveAlias)
                             .collect(Collectors.joining(",")) + sb.toString());
                         newScanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                         scanner.close();
@@ -524,5 +507,23 @@ public class Partialize {
             }
         }
         return partialObject;
+    }
+
+    /**
+     * Resolves alias from a real field name.
+     *
+     * @param fieldName The field name to retrieve alias
+     * @return The alias in case of success, otherwise, the field name
+     * @since 19.01.30
+     */
+    private String resolveAlias(final String fieldName) {
+        if (this.aliases != null && this.aliases.containsValue(fieldName)) {
+            for (final Map.Entry<String, String> e : this.aliases.entrySet()) {
+                if (e.getValue().compareToIgnoreCase(fieldName) == 0) {
+                    return e.getKey();
+                }
+            }
+        }
+        return fieldName;
     }
 }
