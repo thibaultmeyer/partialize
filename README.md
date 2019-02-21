@@ -1,10 +1,10 @@
 # Partialize
 
 
-[![Latest release](https://img.shields.io/badge/latest_release-19.02-orange.svg)](https://github.com/0xbaadf00d/partialize/releases)
-[![JitPack](https://jitpack.io/v/0xbaadf00d/partialize.svg)](https://jitpack.io/#0xbaadf00d/partialize)
-[![Build](https://img.shields.io/travis-ci/0xbaadf00d/partialize.svg?branch=master&style=flat)](https://travis-ci.org/0xbaadf00d/partialize)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/0xbaadf00d/partialize/master/LICENSE)
+[![Latest release](https://img.shields.io/badge/latest_release-19.02-orange.svg)](https://github.com/thibaultmeyer/partialize/releases)
+[![JitPack](https://jitpack.io/v/thibaultmeyer/partialize.svg)](https://jitpack.io/#thibaultmeyer/partialize)
+[![Build](https://img.shields.io/travis-ci/thibaultmeyer/partialize.svg?branch=master&style=flat)](https://travis-ci.org/thibaultmeyer/partialize)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/thibaultmeyer/partialize/master/LICENSE)
 
 Partialize is a Java based library helping you to implement the JSON partial responses on your project.
 *****
@@ -170,4 +170,4 @@ System.out.println(result);
 
 
 ## License
-This project is released under terms of the [MIT license](https://raw.githubusercontent.com/0xbaadf00d/partialize/master/LICENSE).
+This project is released under terms of the [MIT license](https://raw.githubusercontent.com/thibaultmeyer/partialize/master/LICENSE).

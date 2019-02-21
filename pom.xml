@@ -10,23 +10,23 @@
     <packaging>jar</packaging>
     <name>Partialize</name>
     <description>JSON partial responses for Java</description>
-    <url>https://github.com/0xbaadf00d/partialize</url>
+    <url>https://github.com/thibaultmeyer/partialize</url>
 
     <scm>
-        <connection>scm:git:https://github.com/0xbaadf00d/partialize.git</connection>
-        <developerConnection>scm:git:https://github.com/0xbaadf00d/partialize.git</developerConnection>
-        <url>https://github.com/0xbaadf00d/partialize.git</url>
+        <connection>scm:git:https://github.com/thibaultmeyer/partialize.git</connection>
+        <developerConnection>scm:git:https://github.com/thibaultmeyer/partialize.git</developerConnection>
+        <url>https://github.com/thibaultmeyer/partialize.git</url>
     </scm>
 
     <issueManagement>
-        <url>https://github.com/0xbaadf00d/partialize/issues</url>
+        <url>https://github.com/thibaultmeyer/partialize/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
 
     <licenses>
         <license>
             <name>The MIT License (MIT)</name>
-            <url>https://raw.githubusercontent.com/0xbaadf00d/partialize/master/LICENSE</url>
+            <url>https://raw.githubusercontent.com/thibaultmeyer/partialize/master/LICENSE</url>
         </license>
     </licenses>
 
