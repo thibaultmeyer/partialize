@@ -6,7 +6,6 @@
 [![Build](https://api.travis-ci.org/thibaultmeyer/partialize.svg)](https://travis-ci.org/thibaultmeyer/partialize)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/thibaultmeyer/partialize/master/LICENSE)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/thibaultmeyer/partialize.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/thibaultmeyer/partialize/alerts/)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/thibaultmeyer/partialize.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/thibaultmeyer/partialize/alerts/)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/thibaultmeyer/partialize.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/thibaultmeyer/partialize/context:java)
 
 
