@@ -65,7 +65,7 @@ public class InheritanceTest {
      * @version 16.03.22
      * @since 16.03.22
      */
-    public class BasePojo {
+    public static class BasePojo {
 
         private int id;
 
