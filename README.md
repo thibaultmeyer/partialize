@@ -1,7 +1,7 @@
 # Partialize
 
 
-[![Latest release](https://img.shields.io/badge/latest_release-19.11-orange.svg)](https://github.com/thibaultmeyer/partialize/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-20.05-orange.svg)](https://github.com/thibaultmeyer/partialize/releases)
 [![JitPack](https://jitpack.io/v/thibaultmeyer/partialize.svg)](https://jitpack.io/#thibaultmeyer/partialize)
 [![Build](https://api.travis-ci.org/thibaultmeyer/partialize.svg)](https://travis-ci.org/thibaultmeyer/partialize)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/thibaultmeyer/partialize/master/LICENSE)
