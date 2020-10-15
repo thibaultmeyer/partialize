@@ -32,6 +32,7 @@ import java.lang.annotation.*;
  * @version 16.03.15
  * @since 16.01.18
  */
+@Inherited
 @Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
