@@ -7,5 +7,5 @@
 <suppressions>
     <suppress checks="FinalParameters"
               files="Partialize.java"
-              lines="283,371"/>
+              lines="292,388"/>
 </suppressions>
