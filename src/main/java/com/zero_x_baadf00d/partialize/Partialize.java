@@ -30,18 +30,19 @@ import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.zero_x_baadf00d.partialize.converter.Converter;
 import com.zero_x_baadf00d.partialize.policy.AccessPolicy;
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.WordUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 /**
  * Create a partial JSON document from any kind of objects.
@@ -232,12 +233,20 @@ public class Partialize {
                 partialArray.addNull();
             } else if (object instanceof String) {
                 partialArray.add((String) object);
+            } else if (object instanceof Short) {
+                partialArray.add((Short) object);
             } else if (object instanceof Integer) {
                 partialArray.add((Integer) object);
             } else if (object instanceof Long) {
                 partialArray.add((Long) object);
+            } else if (object instanceof Float) {
+                partialArray.add((Float) object);
             } else if (object instanceof Double) {
                 partialArray.add((Double) object);
+            } else if (object instanceof BigInteger) {
+                partialArray.add((BigInteger) object);
+            } else if (object instanceof BigDecimal) {
+                partialArray.add((BigDecimal) object);
             } else if (object instanceof UUID) {
                 partialArray.add(object.toString());
             } else if (object instanceof Boolean) {
@@ -289,12 +298,20 @@ public class Partialize {
                 partialObject.putNull(aliasField);
             } else if (object instanceof String) {
                 partialObject.put(aliasField, (String) object);
+            } else if (object instanceof Short) {
+                partialObject.put(aliasField, (Short) object);
             } else if (object instanceof Integer) {
                 partialObject.put(aliasField, (Integer) object);
             } else if (object instanceof Long) {
                 partialObject.put(aliasField, (Long) object);
+            } else if (object instanceof Float) {
+                partialObject.put(aliasField, (Float) object);
             } else if (object instanceof Double) {
                 partialObject.put(aliasField, (Double) object);
+            } else if (object instanceof BigInteger) {
+                partialObject.put(aliasField, (BigInteger) object);
+            } else if (object instanceof BigDecimal) {
+                partialObject.put(aliasField, (BigDecimal) object);
             } else if (object instanceof UUID) {
                 partialObject.put(aliasField, object.toString());
             } else if (object instanceof Boolean) {
@@ -310,11 +327,11 @@ public class Partialize {
                 }
             } else if (object instanceof Map<?, ?>) {
                 this.buildPartialObject(
-                    depth + 1,
-                    args,
-                    object.getClass(),
-                    object,
-                    partialObject.putObject(aliasField)
+                        depth + 1,
+                        args,
+                        object.getClass(),
+                        object,
+                        partialObject.putObject(aliasField)
                 );
             } else if (object instanceof Enum) {
                 final String tmp = object.toString();
@@ -329,11 +346,11 @@ public class Partialize {
                     converter.convert(aliasField, object, partialObject);
                 } else {
                     this.buildPartialObject(
-                        depth + 1,
-                        args,
-                        object.getClass(),
-                        object,
-                        partialObject.putObject(aliasField)
+                            depth + 1,
+                            args,
+                            object.getClass(),
+                            object,
+                            partialObject.putObject(aliasField)
                     );
                 }
             }
@@ -408,16 +425,20 @@ public class Partialize {
 
                         if (allowedFields.isEmpty()) {
                             allowedFields = new ArrayList<>();
-                            for (final Method m : clazz.getDeclaredMethods()) {
-                                final String methodName = m.getName();
-                                for (final String methodPrefix : Partialize.METHOD_PREFIXES) {
-                                    if (methodName.startsWith(methodPrefix)) {
-                                        final char[] c = methodName.substring(methodPrefix.length()).toCharArray();
-                                        c[0] = Character.toLowerCase(c[0]);
-                                        allowedFields.add(new String(c));
+                            Class<?> clazzActual = clazz;
+                            do {
+                                for (final Method m : clazzActual.getDeclaredMethods()) {
+                                    final String methodName = m.getName();
+                                    for (final String methodPrefix : Partialize.METHOD_PREFIXES) {
+                                        if (methodName.startsWith(methodPrefix)) {
+                                            final char[] c = methodName.substring(methodPrefix.length()).toCharArray();
+                                            c[0] = Character.toLowerCase(c[0]);
+                                            allowedFields.add(new String(c));
+                                        }
                                     }
                                 }
-                            }
+                                clazzActual = clazzActual.getSuperclass();
+                            } while (clazzActual != Object.class);
                         }
 
                         break;
@@ -471,8 +492,8 @@ public class Partialize {
                     }
                     final String aliasField = word;
                     final String field = this.aliases != null && this.aliases.containsKey(aliasField)
-                        ? this.aliases.get(aliasField)
-                        : aliasField;
+                            ? this.aliases.get(aliasField)
+                            : aliasField;
                     if (allowedFields.stream().anyMatch(f -> f.toLowerCase(Locale.ENGLISH).compareTo(field.toLowerCase(Locale.ENGLISH)) == 0)) {
                         if (this.accessPolicyFunction != null && !this.accessPolicyFunction.apply(new AccessPolicy(clazz, instance, field))) {
                             continue;
@@ -480,25 +501,29 @@ public class Partialize {
                         closedFields.add(aliasField);
                         switch (objectType) {
                             case ANNOTATED:
-                                for (final String methodPrefix : Partialize.METHOD_PREFIXES) {
-                                    try {
-                                        final Method method = clazz.getMethod(methodPrefix + WordUtils.capitalize(field));
-                                        final Object object = method.invoke(instance);
-                                        this.internalBuild(depth, aliasField, args, partialObject, object);
-                                        break;
-                                    } catch (final IllegalAccessException | InvocationTargetException | NoSuchMethodException | NullPointerException ignore) {
+                                Class<?> clazzActual = clazz;
+                                do {
+                                    for (final String methodPrefix : Partialize.METHOD_PREFIXES) {
                                         try {
-                                            final Method method = clazz.getMethod(field);
+                                            final Method method = clazzActual.getMethod(methodPrefix + WordUtils.capitalize(field));
                                             final Object object = method.invoke(instance);
                                             this.internalBuild(depth, aliasField, args, partialObject, object);
                                             break;
-                                        } catch (final IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-                                            if (this.exceptionConsumer != null) {
-                                                this.exceptionConsumer.accept(ex);
+                                        } catch (final IllegalAccessException | InvocationTargetException | NoSuchMethodException | NullPointerException ignore) {
+                                            try {
+                                                final Method method = clazzActual.getMethod(field);
+                                                final Object object = method.invoke(instance);
+                                                this.internalBuild(depth, aliasField, args, partialObject, object);
+                                                break;
+                                            } catch (final IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                                                if (this.exceptionConsumer != null) {
+                                                    this.exceptionConsumer.accept(ex);
+                                                }
                                             }
                                         }
                                     }
-                                }
+                                    clazzActual = clazzActual.getSuperclass();
+                                } while (clazzActual != Object.class);
                                 break;
                             case MAP:
                                 final Map<?, ?> tmpMap = (Map<?, ?>) instance;
