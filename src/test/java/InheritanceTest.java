@@ -32,10 +32,10 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 /**
- * BasicTest.
+ * InheritanceTest.
  *
  * @author Thibault Meyer
- * @version 16.03.22
+ * @version 20.10.16
  * @since 16.03.22
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -56,6 +56,25 @@ public class InheritanceTest {
         Assert.assertEquals(42, result.get("id").asInt());
         Assert.assertEquals("John", result.get("name").asText());
         Assert.assertEquals(true, result.has("createdAt"));
+        Assert.assertEquals(false, result.has("updatedAt"));
+    }
+
+    /**
+     * @since 20.10.16
+     */
+    @Test
+    public void inheritanceTest002() {
+        final Pojo2 pojo = new Pojo2();
+        final String fields = "id,name,createdAt,updatedAt";
+        final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
+        com.zero_x_baadf00d.partialize.PartializeConverterManager.getInstance().registerConverter(new JodaDateTimeConverter());
+        final ContainerNode result = partialize.buildPartialObject(fields, Pojo2.class, pojo);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(42, result.get("id").asInt());
+        Assert.assertEquals("John", result.get("name").asText());
+        Assert.assertEquals(true, result.has("createdAt"));
+        Assert.assertEquals(true, result.has("updatedAt"));
     }
 
     /**
@@ -71,8 +90,11 @@ public class InheritanceTest {
 
         private DateTime createdAt;
 
+        private DateTime updatedAt;
+
         protected BasePojo() {
             this.createdAt = DateTime.now();
+            this.updatedAt = DateTime.now();
             this.id = 42;
         }
 
@@ -82,6 +104,10 @@ public class InheritanceTest {
 
         public DateTime getCreatedAt() {
             return this.createdAt;
+        }
+
+        public DateTime getUpdatedAt() {
+            return this.updatedAt;
         }
     }
 
@@ -98,6 +124,28 @@ public class InheritanceTest {
         private String name;
 
         public Pojo() {
+            super();
+            this.name = "John";
+        }
+
+        public String getName() {
+            return this.name;
+        }
+    }
+
+    /**
+     * Pojo2.
+     *
+     * @author Thibault Meyer
+     * @version 20.10.16
+     * @since 20.10.16
+     */
+    @Partialize
+    public class Pojo2 extends BasePojo {
+
+        private String name;
+
+        public Pojo2() {
             super();
             this.name = "John";
         }

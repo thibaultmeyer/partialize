@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * BasicTest.
+ * StandardTest.
  *
  * @author Thibault Meyer
  * @version 16.10.04

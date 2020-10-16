@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * BasicTest.
+ * OptionalTest.
  *
  * @author Thibault Meyer
  * @version 18.05.08
