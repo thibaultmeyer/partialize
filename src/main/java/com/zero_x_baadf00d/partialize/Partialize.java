@@ -139,9 +139,9 @@ public class Partialize {
     }
 
     /**
-     * Defines a field that will be called throughout the process to verify
-     * whether the requested element can be integrated or not to the partial
-     * JSON document.
+     * Defines a field that will be called throughout the process
+     * to verify whether the requested element can be integrated or
+     * not to the partial JSON document.
      *
      * @param apFunction The function to execute
      * @return The current instance of {@code Partialize}
@@ -153,8 +153,8 @@ public class Partialize {
     }
 
     /**
-     * Defines a callback that will be called throughout the process when
-     * exception occurs.
+     * Defines a callback that will be called throughout the process
+     * when exception occurs.
      *
      * @param exceptionCallback The callback to execute
      * @return The current instance of {@code Partialize}
@@ -178,11 +178,11 @@ public class Partialize {
     }
 
     /**
-     * Build a JSON object from data taken from the scanner and the given class
-     * type and instance.
+     * Build a JSON object from data taken from the scanner and
+     * the given class type and instance.
      *
      * @param fields The field query to request
-     * @param clazz The class of the object to render
+     * @param clazz  The class of the object to render
      * @return An instance of {@code ContainerNode}
      * @see ContainerNode
      * @since 16.01.18
@@ -192,11 +192,11 @@ public class Partialize {
     }
 
     /**
-     * Build a JSON object from data taken from the scanner and the given class
-     * type and instance.
+     * Build a JSON object from data taken from the scanner and
+     * the given class type and instance.
      *
-     * @param fields The field query to request
-     * @param clazz The class of the object to render
+     * @param fields   The field query to request
+     * @param clazz    The class of the object to render
      * @param instance The instance of the object to render
      * @return An instance of {@code ContainerNode}
      * @see ContainerNode
@@ -219,15 +219,15 @@ public class Partialize {
     /**
      * Add requested item on the partial JSON document.
      *
-     * @param depth Current depth level
-     * @param aliasField The alias field name
-     * @param args The field Arguments
+     * @param depth        Current depth level
+     * @param aliasField   The alias field name
+     * @param args         The field Arguments
      * @param partialArray The current partial JSON document part
-     * @param object The object to add
+     * @param object       The object to add
      * @since 16.01.18
      */
     private void internalBuild(final int depth, final String aliasField, final String args,
-            final ArrayNode partialArray, final Object object) {
+                               final ArrayNode partialArray, final Object object) {
         if (depth < this.maximumDepth) {
             if (object == null) {
                 partialArray.addNull();
@@ -281,15 +281,15 @@ public class Partialize {
     /**
      * Add requested item on the partial JSON document.
      *
-     * @param depth Current depth level
-     * @param aliasField The alias field name
-     * @param args The field Arguments
+     * @param depth         Current depth level
+     * @param aliasField    The alias field name
+     * @param args          The field Arguments
      * @param partialObject The current partial JSON document part
-     * @param object The object to add
+     * @param object        The object to add
      * @since 16.01.18
      */
     private void internalBuild(final int depth, final String aliasField, final String args,
-            final ObjectNode partialObject, Object object) {
+                               final ObjectNode partialObject, Object object) {
         if (depth <= this.maximumDepth) {
             if (object instanceof Optional) {
                 object = ((Optional<?>) object).orElse(null);
@@ -358,35 +358,35 @@ public class Partialize {
     }
 
     /**
-     * Build a JSON object from data taken from the scanner and the given class
-     * type and instance.
+     * Build a JSON object from data taken from the scanner and
+     * the given class type and instance.
      *
-     * @param depth The current depth
-     * @param fields The field names to requests
-     * @param clazz The class of the object to render
+     * @param depth    The current depth
+     * @param fields   The field names to requests
+     * @param clazz    The class of the object to render
      * @param instance The instance of the object to render
      * @return A JSON Object
      * @since 16.01.18
      */
     private ContainerNode buildPartialObject(final int depth, final String fields,
-            final Class<?> clazz, final Object instance) {
+                                             final Class<?> clazz, final Object instance) {
         return this.buildPartialObject(depth, fields, clazz, instance, this.objectMapper.createObjectNode());
     }
 
     /**
-     * Build a JSON object from data taken from the scanner and the given class
-     * type and instance.
+     * Build a JSON object from data taken from the scanner and
+     * the given class type and instance.
      *
-     * @param depth The current depth
-     * @param fields The field names to requests
-     * @param clazz The class of the object to render
-     * @param instance The instance of the object to render
+     * @param depth         The current depth
+     * @param fields        The field names to requests
+     * @param clazz         The class of the object to render
+     * @param instance      The instance of the object to render
      * @param partialObject The partial JSON document
      * @return A JSON Object
      * @since 16.01.18
      */
     private ContainerNode buildPartialObject(final int depth, String fields, final Class<?> clazz,
-            final Object instance, final ObjectNode partialObject) {
+                                             final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
             final ObjectType objectType;
             if (clazz.isAnnotationPresent(com.zero_x_baadf00d.partialize.annotation.Partialize.class)) {
@@ -413,14 +413,14 @@ public class Partialize {
                 switch (objectType) {
                     case ANNOTATED:
                         allowedFields = Arrays.asList(
-                                clazz
-                                        .getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class)
-                                        .allowedFields()
+                            clazz
+                                .getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class)
+                                .allowedFields()
                         );
                         defaultFields = Arrays.asList(
-                                clazz
-                                        .getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class)
-                                        .defaultFields()
+                            clazz
+                                .getAnnotation(com.zero_x_baadf00d.partialize.annotation.Partialize.class)
+                                .defaultFields()
                         );
 
                         if (allowedFields.isEmpty()) {
@@ -454,8 +454,8 @@ public class Partialize {
 
                 if (defaultFields == null || defaultFields.isEmpty()) {
                     defaultFields = allowedFields.stream()
-                            .map(this::resolveAlias)
-                            .collect(Collectors.toList());
+                        .map(this::resolveAlias)
+                        .collect(Collectors.toList());
                 }
                 if (fields == null || fields.length() == 0) {
                     fields = String.join(",", defaultFields);
@@ -473,9 +473,9 @@ public class Partialize {
                             sb.append(scanner.next());
                         }
                         final Scanner newScanner = new Scanner(allowedFields.stream()
-                                .filter(f -> !closedFields.contains(f))
-                                .map(this::resolveAlias)
-                                .collect(Collectors.joining(",")) + sb.toString());
+                            .filter(f -> !closedFields.contains(f))
+                            .map(this::resolveAlias)
+                            .collect(Collectors.joining(",")) + sb.toString());
                         newScanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                         scanner.close();
                         scanner = newScanner;
