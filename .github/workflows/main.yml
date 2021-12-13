@@ -13,7 +13,5 @@ jobs:
                 with:
                     java-version: '11'
                     distribution: 'adopt'
-            -   name: Checkstyle
-                run: mvn --batch-mode checkstyle:check
             -   name: Build with Maven
-                run: mvn --batch-mode --update-snapshots package
+                run: mvn --batch-mode --update-snapshots -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn package
