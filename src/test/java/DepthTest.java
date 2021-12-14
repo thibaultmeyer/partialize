@@ -106,7 +106,7 @@ public class DepthTest {
     public void depthTest002() {
         final Partialize partialize = new Partialize(1);
 
-        final JsonNode result = partialize.buildPartialObject(null, List.class, this.map);
+        final JsonNode result = partialize.buildPartialObject(null, Map.class, this.map);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("obj"));
