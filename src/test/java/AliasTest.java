@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -37,7 +37,7 @@ import java.util.List;
  * AliasTest.
  *
  * @author Thibault Meyer
- * @version 16.03.16
+ * @version 20.12.14
  * @since 16.03.10
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -51,13 +51,14 @@ public class AliasTest {
         final AliasPojo aliasPojo = new AliasPojo();
         final String fields = "number,myNumber,secret,pojo(*)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        partialize.setAliases(new HashMap<String, String>() {{
+        partialize.setAliases(new HashMap<>() {{
             put("myNumber", "number");
             put("secret", "number");
             put("logo", "logoUrl");
             put("cover", "coverUrl");
         }});
-        final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
+
+        final JsonNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.get("number"));
@@ -78,11 +79,12 @@ public class AliasTest {
         final AliasPojo aliasPojo = new AliasPojo();
         final String fields = "*";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        partialize.setAliases(new HashMap<String, String>() {{
+        partialize.setAliases(new HashMap<>() {{
             put("myNumber", "number");
             put("cover", "coverUrl");
         }});
-        final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
+
+        final JsonNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.get("myNumber"));
@@ -98,10 +100,11 @@ public class AliasTest {
         final AliasPojo aliasPojo = new AliasPojo();
         final String fields = "pojos";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        partialize.setAliases(new HashMap<String, String>() {{
+        partialize.setAliases(new HashMap<>() {{
             put("pojos", "linkedPojos");
         }});
-        final ContainerNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
+
+        final JsonNode result = partialize.buildPartialObject(fields, AliasPojo.class, aliasPojo);
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.get("pojos"));

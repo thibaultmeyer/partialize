@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -36,7 +36,7 @@ import java.util.Map;
  * MapTest.
  *
  * @author Thibault Meyer
- * @version 16.12.05
+ * @version 20.12.14
  * @since 16.12.05
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -59,14 +59,14 @@ public class MapTest {
      */
     @Before
     public void initializePojo() {
-        this.simpleMap = new HashMap<String, Object>() {{
+        this.simpleMap = new HashMap<>() {{
             put("string", "hello world!");
             put("boolean", true);
             put("number", 45.63);
             put("null", null);
         }};
 
-        this.complexMap = new HashMap<String, Object>() {{
+        this.complexMap = new HashMap<>() {{
             put("objA", new HashMap<String, Object>() {{
                 put("name", "demo.bin");
                 put("size", 132456789);
@@ -89,11 +89,13 @@ public class MapTest {
     public void mapTest001() {
         final String fields = "string,boolean,null";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, Map.class, this.simpleMap);
+
+        final JsonNode result = partialize.buildPartialObject(fields, Map.class, this.simpleMap);
+
         Assert.assertNotNull(result);
         Assert.assertEquals("hello world!", result.get("string").asText());
-        Assert.assertEquals(true, result.get("boolean").asBoolean());
-        Assert.assertEquals(true, result.get("null").isNull());
+        Assert.assertTrue(result.get("boolean").asBoolean());
+        Assert.assertTrue(result.get("null").isNull());
     }
 
     /**
@@ -103,12 +105,14 @@ public class MapTest {
     public void mapTest002() {
         final String fields = "*";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, Map.class, this.simpleMap);
+
+        final JsonNode result = partialize.buildPartialObject(fields, Map.class, this.simpleMap);
+
         Assert.assertNotNull(result);
         Assert.assertEquals("hello world!", result.get("string").asText());
-        Assert.assertEquals(true, result.get("boolean").asBoolean());
+        Assert.assertTrue(result.get("boolean").asBoolean());
         Assert.assertEquals(45.63, result.get("number").asDouble(), 2);
-        Assert.assertEquals(true, result.get("null").isNull());
+        Assert.assertTrue(result.get("null").isNull());
     }
 
     /**
@@ -118,14 +122,16 @@ public class MapTest {
     public void mapTest003() {
         final String fields = "objA,objB";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, Map.class, this.complexMap);
+
+        final JsonNode result = partialize.buildPartialObject(fields, Map.class, this.complexMap);
+
         Assert.assertNotNull(result);
-        Assert.assertEquals(true, result.get("objA").isObject());
+        Assert.assertTrue(result.get("objA").isObject());
         Assert.assertEquals("demo.bin", result.get("objA").get("name").asText());
         Assert.assertEquals(132456789, result.get("objA").get("size").asInt());
-        Assert.assertEquals(true, result.get("objA").get("isEnabled").asBoolean());
-        Assert.assertEquals(true, result.get("objA").get("isEnabled").asBoolean());
-        Assert.assertEquals(true, result.get("objB").isNull());
+        Assert.assertTrue(result.get("objA").get("isEnabled").asBoolean());
+        Assert.assertTrue(result.get("objA").get("isEnabled").asBoolean());
+        Assert.assertTrue(result.get("objB").isNull());
     }
 
     /**
@@ -135,9 +141,11 @@ public class MapTest {
     public void mapTest004() {
         final String fields = "objA(name,size)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, Map.class, this.complexMap);
+
+        final JsonNode result = partialize.buildPartialObject(fields, Map.class, this.complexMap);
+
         Assert.assertNotNull(result);
-        Assert.assertEquals(true, result.get("objA").isObject());
+        Assert.assertTrue(result.get("objA").isObject());
         Assert.assertEquals("demo.bin", result.get("objA").get("name").asText());
         Assert.assertEquals(132456789, result.get("objA").get("size").asInt());
     }
@@ -149,13 +157,15 @@ public class MapTest {
     public void mapTest005() {
         final String fields = "objC(subObject(key))";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, Map.class, this.complexMap);
+
+        final JsonNode result = partialize.buildPartialObject(fields, Map.class, this.complexMap);
+
         Assert.assertNotNull(result);
-        Assert.assertEquals(true, result.has("objC"));
-        Assert.assertEquals(true, result.get("objC").isObject());
-        Assert.assertEquals(true, result.get("objC").has("subObject"));
-        Assert.assertEquals(true, result.get("objC").get("subObject").isObject());
-        Assert.assertEquals(true, result.get("objC").get("subObject").has("key"));
+        Assert.assertTrue(result.has("objC"));
+        Assert.assertTrue(result.get("objC").isObject());
+        Assert.assertTrue(result.get("objC").has("subObject"));
+        Assert.assertTrue(result.get("objC").get("subObject").isObject());
+        Assert.assertTrue(result.get("objC").get("subObject").has("key"));
         Assert.assertEquals("value", result.get("objC").get("subObject").get("key").asText());
     }
 }

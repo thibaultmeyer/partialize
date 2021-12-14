@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -33,7 +33,7 @@ import org.junit.runners.MethodSorters;
  * StaticTest.
  *
  * @author Thibault Meyer
- * @version 16.01.18
+ * @version 20.12.14
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -46,7 +46,9 @@ public class StaticTest {
     public void staticTest001() {
         final String fields = "buildDate";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, StaticPojo.class);
+
+        final JsonNode result = partialize.buildPartialObject(fields, StaticPojo.class);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("buildDate"));
         Assert.assertEquals("2016-01-10", result.get("buildDate").asText());
@@ -60,14 +62,15 @@ public class StaticTest {
         final MixedPojo mixedPojo = new MixedPojo();
         final String fields = "number,42,null";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, MixedPojo.class, mixedPojo);
+
+        final JsonNode result = partialize.buildPartialObject(fields, MixedPojo.class, mixedPojo);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("number"));
         Assert.assertTrue(result.has("42"));
         Assert.assertEquals(42, result.get("number").asInt());
         Assert.assertEquals(42, result.get("42").asInt());
-        Assert.assertEquals(true, result.get("null").isNull());
+        Assert.assertTrue(result.get("null").isNull());
     }
 
     /**

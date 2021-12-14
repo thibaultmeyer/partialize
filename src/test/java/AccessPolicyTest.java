@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import com.zero_x_baadf00d.partialize.policy.AccessPolicy;
 import org.junit.Assert;
@@ -38,7 +38,7 @@ import java.util.function.Function;
  * AccessPolicyTest.
  *
  * @author Thibault Meyer
- * @version 16.10.04
+ * @version 20.12.14
  * @since 16.10.04
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -51,9 +51,9 @@ public class AccessPolicyTest {
     public void accessPolicy001() {
         final String fields = "firstName,password";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        partialize.setAccessPolicy(new Function<AccessPolicy, Boolean>() {
+        partialize.setAccessPolicy(new Function<>() {
 
-            private final List<String> granted = new ArrayList<String>() {{
+            private final List<String> granted = new ArrayList<>() {{
                 add("firstName");
             }};
 
@@ -62,7 +62,8 @@ public class AccessPolicyTest {
                 return granted.contains(accessPolicy.field);
             }
         });
-        final ContainerNode result = partialize.buildPartialObject(fields, AccessPolicyTest.Pojo.class, new Pojo());
+
+        final JsonNode result = partialize.buildPartialObject(fields, AccessPolicyTest.Pojo.class, new Pojo());
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("firstName"));
@@ -73,14 +74,14 @@ public class AccessPolicyTest {
      * Pojo.
      *
      * @author Thibault Meyer
-     * @version 16.10.04
+     * @version 20.12.14
      * @since 16.10.04
      */
     @Partialize(allowedFields = {"firstName", "password"})
     public static class Pojo {
 
-        private String firstName;
-        private String password;
+        private final String firstName;
+        private final String password;
 
         public Pojo() {
             this.firstName = "John";

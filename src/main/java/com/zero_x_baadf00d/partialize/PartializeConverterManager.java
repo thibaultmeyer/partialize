@@ -33,7 +33,7 @@ import java.util.Map;
  * This manager handles all registered converters.
  *
  * @author Thibault Meyer
- * @version 16.10.04
+ * @version 20.12.14
  * @since 16.03.22
  */
 public final class PartializeConverterManager {
@@ -43,7 +43,7 @@ public final class PartializeConverterManager {
      *
      * @since 16.03.22
      */
-    private final Map<Class, Converter> registeredConverters;
+    private final Map<Class<?>, Converter<?>> registeredConverters;
 
     /**
      * Build a basic instance.
@@ -70,7 +70,7 @@ public final class PartializeConverterManager {
      * @param converter The converter to register
      * @since 16.03.22
      */
-    public void registerConverter(final Converter converter) {
+    public void registerConverter(final Converter<?> converter) {
         this.registeredConverters.putIfAbsent(converter.getManagedObjectClass(), converter);
     }
 
@@ -80,8 +80,8 @@ public final class PartializeConverterManager {
      * @param converters A list of registeredConverters to register
      * @since 16.03.22
      */
-    public void registerConverters(final Converter... converters) {
-        for (final Converter converter : converters) {
+    public void registerConverters(final Converter<?>... converters) {
+        for (final Converter<?> converter : converters) {
             this.registeredConverters.putIfAbsent(converter.getManagedObjectClass(), converter);
         }
     }
@@ -92,8 +92,8 @@ public final class PartializeConverterManager {
      * @param converters A list of registeredConverters to register
      * @since 16.03.22
      */
-    public void registerConverters(final List<Converter> converters) {
-        for (final Converter converter : converters) {
+    public void registerConverters(final List<Converter<?>> converters) {
+        for (final Converter<?> converter : converters) {
             this.registeredConverters.putIfAbsent(converter.getManagedObjectClass(), converter);
         }
     }
@@ -122,10 +122,12 @@ public final class PartializeConverterManager {
      *
      * @param clazz The class of the object to convert
      * @return The converter, otherwise, {@code null}
+     * @param <OUT_TYPE> Output type
      * @since 16.03.22
      */
-    public Converter getConverter(final Class clazz) {
-        return this.registeredConverters.get(clazz);
+    @SuppressWarnings("unchecked")
+    public <OUT_TYPE> Converter<OUT_TYPE> getConverter(final Class<? extends OUT_TYPE> clazz) {
+        return (Converter<OUT_TYPE>) this.registeredConverters.get(clazz);
     }
 
     /**

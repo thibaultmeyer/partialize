@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,7 +37,7 @@ import java.util.Optional;
  * OptionalTest.
  *
  * @author Thibault Meyer
- * @version 18.05.08
+ * @version 20.12.14
  * @since 18.05.08
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -65,7 +65,8 @@ public class OptionalTest {
     @Test
     public void optionalTest001() {
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(
+
+        final JsonNode result = partialize.buildPartialObject(
             "firstName,age,tags",
             OptionalTest.PojoWithOptional.class,
             this.pojoWithOptional

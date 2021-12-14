@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,7 +39,7 @@ import java.util.UUID;
  * BasicTest.
  *
  * @author Thibault Meyer
- * @version 18.05.10
+ * @version 20.12.14
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -101,7 +101,8 @@ public class BasicTest {
     public void basicTest001() {
         final String fields = "firstName,lastName,emails(uid)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
+
+        final JsonNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
 
         Assert.assertNotNull(result);
         Assert.assertEquals("John", result.get("firstName").asText());
@@ -122,7 +123,9 @@ public class BasicTest {
     public void basicTest002() {
         final String fields = "*";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
+
+        final JsonNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("uid"));
         Assert.assertFalse(result.has("id"));
@@ -138,7 +141,8 @@ public class BasicTest {
     public void basicTest003() {
         final String fields = "emails(*),firstName";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
+
+        final JsonNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
 
         Assert.assertNotNull(result);
         Assert.assertEquals("John", result.get("firstName").asText());
@@ -161,7 +165,8 @@ public class BasicTest {
     public void basicTest004() {
         final String fields = "*,emails(uid,email)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
+
+        final JsonNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
 
         Assert.assertNotNull(result);
         Assert.assertEquals("John", result.get("firstName").asText());
@@ -186,7 +191,8 @@ public class BasicTest {
         this.account.setEmails(null);
         final String fields = "emails";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
+
+        final JsonNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("emails"));
@@ -200,7 +206,9 @@ public class BasicTest {
     public void basicTest006() {
         final String fields = "*";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, EmailPojo.class, this.account.emails.get(0));
+
+        final JsonNode result = partialize.buildPartialObject(fields, EmailPojo.class, this.account.emails.get(0));
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("dead"));
         Assert.assertFalse(result.get("dead").isNull());
@@ -214,7 +222,9 @@ public class BasicTest {
     @Test
     public void basicTest007() {
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(null, EmailPojo.class, this.account.emails.get(0));
+
+        final JsonNode result = partialize.buildPartialObject(null, EmailPojo.class, this.account.emails.get(0));
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("uid"));
         Assert.assertEquals(this.account.emails.get(0).uid.toString(), result.get("uid").asText());
@@ -226,7 +236,9 @@ public class BasicTest {
     @Test
     public void basicTest008() {
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(null, EmailPojo.class, null);
+
+        final JsonNode result = partialize.buildPartialObject(null, EmailPojo.class, null);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isObject());
     }

@@ -36,7 +36,7 @@ import org.junit.runners.MethodSorters;
  * DefaultConverterTest.
  *
  * @author Thibault Meyer
- * @version 16.10.04
+ * @version 20.12.14
  * @since 16.10.04
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -50,7 +50,9 @@ public class DefaultConverterTest {
         final Converter<Object> converter = new DefaultConverter();
         final ObjectNode objectNode = new ObjectMapper().createObjectNode();
         final Pojo pojo = new Pojo();
+
         converter.convert("data", pojo, objectNode);
+
         Assert.assertTrue(objectNode.has("data"));
         Assert.assertEquals(pojo.toString(), objectNode.get("data").asText());
     }
@@ -63,7 +65,9 @@ public class DefaultConverterTest {
         final Converter<Object> converter = new DefaultConverter();
         final ArrayNode arrayNode = new ObjectMapper().createArrayNode();
         final Pojo pojo = new Pojo();
+
         converter.convert("data", pojo, arrayNode);
+
         Assert.assertEquals(1, arrayNode.size());
         Assert.assertEquals(pojo.toString(), arrayNode.get(0).asText());
     }

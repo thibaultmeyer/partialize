@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * Create a partial JSON document from any kind of objects.
  *
  * @author Thibault Meyer
- * @version 18.05.10
+ * @version 20.12.14
  * @since 16.01.18
  */
 @SuppressWarnings("UnusedReturnValue")
@@ -188,7 +188,7 @@ public class Partialize {
      * @see ContainerNode
      * @since 16.01.18
      */
-    public ContainerNode buildPartialObject(final String fields, final Class<?> clazz) {
+    public ContainerNode<?> buildPartialObject(final String fields, final Class<?> clazz) {
         return this.buildPartialObject(fields, clazz, null);
     }
 
@@ -203,7 +203,7 @@ public class Partialize {
      * @see ContainerNode
      * @since 16.01.18
      */
-    public ContainerNode buildPartialObject(final String fields, final Class<?> clazz, final Object instance) {
+    public ContainerNode<?> buildPartialObject(final String fields, final Class<?> clazz, final Object instance) {
         if (instance instanceof Collection<?>) {
             final ArrayNode partialArray = this.objectMapper.createArrayNode();
             if (((Collection<?>) instance).size() > 0) {
@@ -269,7 +269,7 @@ public class Partialize {
                     partialArray.add(tmp);
                 }
             } else {
-                final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
+                final Converter<Object> converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
                 if (converter != null) {
                     converter.convert(aliasField, object, partialArray);
                 } else {
@@ -342,7 +342,7 @@ public class Partialize {
                     partialObject.put(aliasField, tmp);
                 }
             } else {
-                final Converter converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
+                final Converter<Object> converter = PartializeConverterManager.getInstance().getConverter(object.getClass());
                 if (converter != null) {
                     converter.convert(aliasField, object, partialObject);
                 } else {
@@ -369,8 +369,8 @@ public class Partialize {
      * @return A JSON Object
      * @since 16.01.18
      */
-    private ContainerNode buildPartialObject(final int depth, final String fields,
-                                             final Class<?> clazz, final Object instance) {
+    private ContainerNode<?> buildPartialObject(final int depth, final String fields,
+                                                final Class<?> clazz, final Object instance) {
         return this.buildPartialObject(depth, fields, clazz, instance, this.objectMapper.createObjectNode());
     }
 
@@ -386,8 +386,8 @@ public class Partialize {
      * @return A JSON Object
      * @since 16.01.18
      */
-    private ContainerNode buildPartialObject(final int depth, String fields, final Class<?> clazz,
-                                             final Object instance, final ObjectNode partialObject) {
+    private ContainerNode<?> buildPartialObject(final int depth, String fields, final Class<?> clazz,
+                                                final Object instance, final ObjectNode partialObject) {
         if (depth <= this.maximumDepth) {
             final ObjectType objectType;
             if (clazz.isAnnotationPresent(com.zero_x_baadf00d.partialize.annotation.Partialize.class)) {
@@ -476,7 +476,7 @@ public class Partialize {
                         final Scanner newScanner = new Scanner(allowedFields.stream()
                             .filter(f -> !closedFields.contains(f))
                             .map(this::resolveAlias)
-                            .collect(Collectors.joining(",")) + sb.toString());
+                            .collect(Collectors.joining(",")) + sb);
                         newScanner.useDelimiter(com.zero_x_baadf00d.partialize.Partialize.SCANNER_DELIMITER);
                         scanner.close();
                         scanner = newScanner;

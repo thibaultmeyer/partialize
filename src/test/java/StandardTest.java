@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import converters.JodaDateTimeConverter;
 import org.joda.time.DateTime;
@@ -41,7 +41,7 @@ import java.util.Map;
  * StandardTest.
  *
  * @author Thibault Meyer
- * @version 16.10.04
+ * @version 20.12.14
  * @since 16.01.18
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -100,7 +100,9 @@ public class StandardTest {
     public void standardTest001() {
         final String fields = "displayName,amount,createDate";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
+        final JsonNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
         Assert.assertNotNull(result);
         Assert.assertEquals("My bank account", result.get("displayName").asText());
         Assert.assertEquals(42.84, result.get("amount").asDouble(), 0);
@@ -115,7 +117,9 @@ public class StandardTest {
     public void standardTest002() {
         final String fields = "displayName,listOfList,createDate";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
+        final JsonNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
         Assert.assertNotNull(result);
         Assert.assertEquals("My bank account", result.get("displayName").asText());
         Assert.assertNotNull(result.get("createDate"));
@@ -136,7 +140,9 @@ public class StandardTest {
     public void standardTest003() {
         final String fields = "attributes";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
+        final JsonNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("attributes"));
         Assert.assertTrue(result.get("attributes").has("boolean"));
@@ -153,7 +159,9 @@ public class StandardTest {
     public void standardTest004() {
         final String fields = "attributes(boolean,integer),displayName";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
+        final JsonNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("attributes"));
         Assert.assertTrue(result.has("displayName"));
@@ -171,7 +179,9 @@ public class StandardTest {
     public void standardTest005() {
         final String fields = "isActive";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
+        final JsonNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
         Assert.assertNotNull(result);
         Assert.assertFalse(result.has("isActive"));
     }
@@ -183,7 +193,9 @@ public class StandardTest {
     public void standardTest006() {
         final String fields = "attributes(boolean,*)";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
-        final ContainerNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
+        final JsonNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("attributes"));
         Assert.assertTrue(result.get("attributes").has("boolean"));

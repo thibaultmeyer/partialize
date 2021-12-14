@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zero_x_baadf00d.partialize.Partialize;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,7 +39,7 @@ import java.util.Map;
  * DepthTest.
  *
  * @author Thibault Meyer
- * @version 16.12.06
+ * @version 20.12.14
  * @since 16.12.06
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -62,25 +62,25 @@ public class DepthTest {
      */
     @Before
     public void initializePojo() {
-        this.list = new ArrayList<Object>() {{
-            add(new ArrayList<Object>() {{
-                add(new ArrayList<Object>() {{
-                    add(new ArrayList<Object>() {{
+        this.list = new ArrayList<>() {{
+            add(new ArrayList<>() {{
+                add(new ArrayList<>() {{
+                    add(new ArrayList<>() {{
                         add("Hello");
                     }});
                 }});
             }});
         }};
-        this.map = new HashMap<String, Object>() {{
+        this.map = new HashMap<>() {{
             put("obj", new HashMap<String, Object>() {{
                 put("obj", new HashMap<String, Object>() {{
                     put("obj", "Hello");
                 }});
             }});
             put("obj2", new HashMap<String, Object>() {{
-                put("obj2", new ArrayList<Object>() {{
+                put("obj2", new ArrayList<>() {{
                     add(new HashMap<String, Object>() {{
-                        put("obj2", new ArrayList<Object>() {{
+                        put("obj2", new ArrayList<>() {{
                             add("Hello");
                         }});
                     }});
@@ -92,7 +92,9 @@ public class DepthTest {
     @Test
     public void depthTest001() {
         final Partialize partialize = new Partialize(1);
-        final ContainerNode result = partialize.buildPartialObject(null, List.class, this.list);
+
+        final JsonNode result = partialize.buildPartialObject(null, List.class, this.list);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has(0));
         Assert.assertTrue(result.get(0).isArray());
@@ -103,7 +105,9 @@ public class DepthTest {
     @Test
     public void depthTest002() {
         final Partialize partialize = new Partialize(1);
-        final ContainerNode result = partialize.buildPartialObject(null, List.class, this.map);
+
+        final JsonNode result = partialize.buildPartialObject(null, List.class, this.map);
+
         Assert.assertNotNull(result);
         Assert.assertTrue(result.has("obj"));
         Assert.assertTrue(result.get("obj").isObject());

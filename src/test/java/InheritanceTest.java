@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import com.fasterxml.jackson.databind.node.ContainerNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zero_x_baadf00d.partialize.annotation.Partialize;
 import converters.JodaDateTimeConverter;
 import org.joda.time.DateTime;
@@ -50,13 +50,14 @@ public class InheritanceTest {
         final String fields = "id,name,createdAt";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         com.zero_x_baadf00d.partialize.PartializeConverterManager.getInstance().registerConverter(new JodaDateTimeConverter());
-        final ContainerNode result = partialize.buildPartialObject(fields, Pojo.class, pojo);
+
+        final JsonNode result = partialize.buildPartialObject(fields, Pojo.class, pojo);
 
         Assert.assertNotNull(result);
         Assert.assertEquals(42, result.get("id").asInt());
         Assert.assertEquals("John", result.get("name").asText());
-        Assert.assertEquals(true, result.has("createdAt"));
-        Assert.assertEquals(false, result.has("updatedAt"));
+        Assert.assertTrue(result.has("createdAt"));
+        Assert.assertFalse(result.has("updatedAt"));
     }
 
     /**
@@ -68,29 +69,30 @@ public class InheritanceTest {
         final String fields = "id,name,createdAt,updatedAt";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
         com.zero_x_baadf00d.partialize.PartializeConverterManager.getInstance().registerConverter(new JodaDateTimeConverter());
-        final ContainerNode result = partialize.buildPartialObject(fields, Pojo2.class, pojo);
+
+        final JsonNode result = partialize.buildPartialObject(fields, Pojo2.class, pojo);
 
         Assert.assertNotNull(result);
         Assert.assertEquals(42, result.get("id").asInt());
         Assert.assertEquals("John", result.get("name").asText());
-        Assert.assertEquals(true, result.has("createdAt"));
-        Assert.assertEquals(true, result.has("updatedAt"));
+        Assert.assertTrue(result.has("createdAt"));
+        Assert.assertTrue(result.has("updatedAt"));
     }
 
     /**
      * BasePojo.
      *
      * @author Thibault Meyer
-     * @version 16.03.22
+     * @version 20.12.14
      * @since 16.03.22
      */
     public static class BasePojo {
 
-        private int id;
+        private final int id;
 
-        private DateTime createdAt;
+        private final DateTime createdAt;
 
-        private DateTime updatedAt;
+        private final DateTime updatedAt;
 
         protected BasePojo() {
             this.createdAt = DateTime.now();
@@ -115,13 +117,13 @@ public class InheritanceTest {
      * Pojo.
      *
      * @author Thibault Meyer
-     * @version 16.03.22
+     * @version 20.12.14
      * @since 16.03.22
      */
     @Partialize(allowedFields = {"id", "createdAt", "name"})
     public class Pojo extends BasePojo {
 
-        private String name;
+        private final String name;
 
         public Pojo() {
             super();
@@ -137,13 +139,13 @@ public class InheritanceTest {
      * Pojo2.
      *
      * @author Thibault Meyer
-     * @version 20.10.16
+     * @version 20.12.14
      * @since 20.10.16
      */
     @Partialize
     public class Pojo2 extends BasePojo {
 
-        private String name;
+        private final String name;
 
         public Pojo2() {
             super();

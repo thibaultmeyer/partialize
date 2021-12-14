@@ -26,12 +26,14 @@ import com.zero_x_baadf00d.partialize.PartializeConverterManager;
 import com.zero_x_baadf00d.partialize.converter.Converter;
 import converters.BigDecimalConverter;
 import converters.JodaDateTimeConverter;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +41,7 @@ import java.util.List;
  * ConverterManagerTest.
  *
  * @author Thibault Meyer
- * @version 16.10.04
+ * @version 20.12.14
  * @since 16.10.04
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -58,8 +60,9 @@ public class ConverterManagerTest {
      */
     @Test
     public void converterManager001() {
-        final Converter converter = new JodaDateTimeConverter();
+        final Converter<DateTime> converter = new JodaDateTimeConverter();
         PartializeConverterManager.getInstance().registerConverter(converter);
+
         Assert.assertEquals(
             1,
             PartializeConverterManager.getInstance().count()
@@ -75,9 +78,10 @@ public class ConverterManagerTest {
      */
     @Test
     public void converterManager002() {
-        final Converter converter_1 = new JodaDateTimeConverter();
-        final Converter converter_2 = new BigDecimalConverter();
+        final Converter<DateTime> converter_1 = new JodaDateTimeConverter();
+        final Converter<BigDecimal> converter_2 = new BigDecimalConverter();
         PartializeConverterManager.getInstance().registerConverters(converter_1, converter_2);
+
         Assert.assertEquals(
             2,
             PartializeConverterManager.getInstance().count()
@@ -97,11 +101,12 @@ public class ConverterManagerTest {
      */
     @Test
     public void converterManager003() {
-        final List<Converter> converters = new ArrayList<Converter>() {{
+        final List<Converter<?>> converters = new ArrayList<>() {{
             add(new JodaDateTimeConverter());
             add(new BigDecimalConverter());
         }};
         PartializeConverterManager.getInstance().registerConverters(converters);
+
         Assert.assertEquals(
             2,
             PartializeConverterManager.getInstance().count()
