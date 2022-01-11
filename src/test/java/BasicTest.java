@@ -65,6 +65,10 @@ public class BasicTest {
             this.account.setUid(UUID.randomUUID());
             this.account.setFirstName("John");
             this.account.setLastName("Smith");
+            this.account.setExperiencePoint((short) 10);
+            this.account.setFund(100000);
+            this.account.setPrecisionAsDouble(0.88);
+            this.account.setPrecisionAsFloat((float) 0.76);
 
             final List<EmailPojo> emails = new ArrayList<>();
             this.account.setEmails(emails);
@@ -99,7 +103,7 @@ public class BasicTest {
      */
     @Test
     public void basicTest001() {
-        final String fields = "firstName,lastName,emails(uid)";
+        final String fields = "firstName,lastName,experiencePoint,emails(uid),fund";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
 
         final JsonNode result = partialize.buildPartialObject(fields, AccountPojo.class, this.account);
@@ -107,6 +111,8 @@ public class BasicTest {
         Assert.assertNotNull(result);
         Assert.assertEquals("John", result.get("firstName").asText());
         Assert.assertEquals("Smith", result.get("lastName").asText());
+        Assert.assertEquals(10, result.get("experiencePoint").asInt());
+        Assert.assertEquals(100000, result.get("fund").asInt());
         Assert.assertFalse(result.get("emails").get(0).has("email"));
         Assert.assertTrue(result.get("emails").has(1));
         Assert.assertFalse(result.get("emails").has(2));
@@ -171,6 +177,8 @@ public class BasicTest {
         Assert.assertNotNull(result);
         Assert.assertEquals("John", result.get("firstName").asText());
         Assert.assertEquals("Smith", result.get("lastName").asText());
+        Assert.assertEquals(0.88, result.get("precisionAsDouble").asDouble(), 0);
+        Assert.assertEquals(0.76, result.get("precisionAsFloat").asDouble(), 0.01);
         Assert.assertTrue(result.get("emails").has(0));
         Assert.assertTrue(result.get("emails").has(1));
         Assert.assertFalse(result.get("emails").has(2));
@@ -355,7 +363,7 @@ public class BasicTest {
      * @since 16.01.18
      */
     @Partialize(
-        allowedFields = {"uid", "firstName", "lastName", "emails"},
+        allowedFields = {"uid", "firstName", "lastName", "emails", "experiencePoint", "fund", "precisionAsDouble", "precisionAsFloat"},
         defaultFields = {"uid", "firstName", "lastName"}
     )
     public static class AccountPojo {
@@ -364,6 +372,10 @@ public class BasicTest {
         private UUID uid;
         private String firstName;
         private String lastName;
+        private short experiencePoint;
+        private long fund;
+        private double precisionAsDouble;
+        private float precisionAsFloat;
         private List<EmailPojo> emails;
 
         public int getId() {
@@ -396,6 +408,38 @@ public class BasicTest {
 
         public void setLastName(String lastName) {
             this.lastName = lastName;
+        }
+
+        public short getExperiencePoint() {
+            return experiencePoint;
+        }
+
+        public void setExperiencePoint(final short experiencePoint) {
+            this.experiencePoint = experiencePoint;
+        }
+
+        public long getFund() {
+            return fund;
+        }
+
+        public void setFund(final long fund) {
+            this.fund = fund;
+        }
+
+        public double getPrecisionAsDouble() {
+            return precisionAsDouble;
+        }
+
+        public void setPrecisionAsDouble(final double precisionAsDouble) {
+            this.precisionAsDouble = precisionAsDouble;
+        }
+
+        public float getPrecisionAsFloat() {
+            return precisionAsFloat;
+        }
+
+        public void setPrecisionAsFloat(final float precisionAsFloat) {
+            this.precisionAsFloat = precisionAsFloat;
         }
 
         public List<EmailPojo> getEmails() {

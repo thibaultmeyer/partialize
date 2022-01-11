@@ -53,6 +53,7 @@ public class DefaultConverterTest {
 
         converter.convert("data", pojo, objectNode);
 
+        Assert.assertEquals(Object.class, converter.getManagedObjectClass());
         Assert.assertTrue(objectNode.has("data"));
         Assert.assertEquals(pojo.toString(), objectNode.get("data").asText());
     }
@@ -68,6 +69,7 @@ public class DefaultConverterTest {
 
         converter.convert("data", pojo, arrayNode);
 
+        Assert.assertEquals(Object.class, converter.getManagedObjectClass());
         Assert.assertEquals(1, arrayNode.size());
         Assert.assertEquals(pojo.toString(), arrayNode.get(0).asText());
     }

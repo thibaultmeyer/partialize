@@ -90,6 +90,8 @@ public class StandardTest {
             attributes.put("boolean", false);
             attributes.put("string", "hello world");
             this.bankAccount.setAttributes(attributes);
+            this.bankAccount.setLevel(BankAccountLevel.STANDARD);
+            this.bankAccount.setNetwork(BankAccountNetwork.NET_1);
         }
     }
 
@@ -98,7 +100,7 @@ public class StandardTest {
      */
     @Test
     public void standardTest001() {
-        final String fields = "displayName,amount,createDate";
+        final String fields = "displayName,amount,createDate,level,network";
         final com.zero_x_baadf00d.partialize.Partialize partialize = new com.zero_x_baadf00d.partialize.Partialize();
 
         final JsonNode result = partialize.buildPartialObject(fields, BankAccountPojo.class, this.bankAccount);
@@ -108,6 +110,8 @@ public class StandardTest {
         Assert.assertEquals(42.84, result.get("amount").asDouble(), 0);
         Assert.assertNotNull(result.get("createDate"));
         Assert.assertEquals(this.currentDateTime.toString("yyyy-MM-dd'T'HH:mm:ss"), result.get("createDate").asText());
+        Assert.assertEquals(BankAccountLevel.STANDARD.toString(), result.get("level").asText());
+        Assert.assertEquals(BankAccountNetwork.NET_1.toString(), result.get("network").asText());
     }
 
     /**
@@ -219,6 +223,8 @@ public class StandardTest {
         private Double amount;
         private List<List<String>> listOfList;
         private Map<String, Object> attributes;
+        private BankAccountLevel level;
+        private BankAccountNetwork network;
 
         private DateTime createDate;
 
@@ -264,6 +270,41 @@ public class StandardTest {
 
         public boolean isActive() {
             return false;
+        }
+
+        public BankAccountLevel getLevel() {
+            return level;
+        }
+
+        public void setLevel(final BankAccountLevel level) {
+            this.level = level;
+        }
+
+        public BankAccountNetwork getNetwork() {
+            return network;
+        }
+
+        public void setNetwork(final BankAccountNetwork network) {
+            this.network = network;
+        }
+    }
+
+    public enum BankAccountLevel {
+        STANDARD
+    }
+
+    public enum BankAccountNetwork {
+        NET_1("1");
+
+        private final String networkId;
+
+        BankAccountNetwork(final String networkId) {
+            this.networkId = networkId;
+        }
+
+        @Override
+        public String toString() {
+            return this.networkId;
         }
     }
 }

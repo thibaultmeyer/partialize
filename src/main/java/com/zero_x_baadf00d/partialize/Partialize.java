@@ -535,7 +535,12 @@ public class Partialize {
                     }
                 }
             } else {
-                throw new RuntimeException("Can't convert " + clazz.getCanonicalName());
+                final RuntimeException runtimeException = new RuntimeException("Can't convert " + clazz.getCanonicalName());
+                if (this.exceptionConsumer != null) {
+                    this.exceptionConsumer.accept(runtimeException);
+                } else {
+                    throw runtimeException;
+                }
             }
         }
         return partialObject;
