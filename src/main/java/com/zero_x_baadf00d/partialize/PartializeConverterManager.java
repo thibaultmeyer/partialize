@@ -120,9 +120,9 @@ public final class PartializeConverterManager {
     /**
      * Get a registered converter.
      *
-     * @param clazz The class of the object to convert
-     * @return The converter, otherwise, {@code null}
+     * @param clazz      The class of the object to convert
      * @param <OUT_TYPE> Output type
+     * @return The converter, otherwise, {@code null}
      * @since 16.03.22
      */
     @SuppressWarnings("unchecked")

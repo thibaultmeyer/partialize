@@ -38,7 +38,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -508,7 +516,8 @@ public class Partialize {
                                         final Object object = method.invoke(instance);
                                         this.internalBuild(depth, aliasField, args, partialObject, object);
                                         break;
-                                    } catch (final IllegalAccessException | InvocationTargetException | NoSuchMethodException | NullPointerException ignore) {
+                                    } catch (final IllegalAccessException | InvocationTargetException
+                                                   | NoSuchMethodException | NullPointerException ignore) {
                                         try {
                                             final Method method = clazz.getMethod(field);
                                             final Object object = method.invoke(instance);
