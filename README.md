@@ -24,7 +24,7 @@ under tags `partialize` and `java`.
 
 
 ## Build the library
-To compile Partialize, you must ensure that Java 8 and Maven are correctly
+To compile Partialize, you must ensure that Java 9 and Maven are correctly
 installed.
 
     #> mvn compile
