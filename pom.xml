@@ -30,10 +30,38 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>thibaultmeyer</id>
+            <name>Thibault Meyer</name>
+            <roles>
+                <role>Owner</role>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:sszzz</maven.build.timestamp.format>
+
+        <!-- Plugins -->
+        <plugin.version.mavencompiler>3.8.1</plugin.version.mavencompiler>
+        <plugin.version.mavendependency>3.4.0</plugin.version.mavendependency>
+        <plugin.version.mavengpg>3.0.1</plugin.version.mavengpg>
+        <plugin.version.mavenjavadoc>3.4.1</plugin.version.mavenjavadoc>
+        <plugin.version.mavensource>3.2.1</plugin.version.mavensource>
+        <plugin.version.mavencheckstyle>3.2.0</plugin.version.mavencheckstyle>
+
+        <!-- Dependencies -->
+        <dependency.version.jackson>2.14.1</dependency.version.jackson>
+        <dependency.version.commontext>1.10.0</dependency.version.commontext>
+
+        <!-- Unit Tests -->
+        <dependency.version.junit>4.13.2</dependency.version.junit>
+        <dependency.version.jodatime>2.12.2</dependency.version.jodatime>
     </properties>
 
     <build>
@@ -42,7 +70,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${plugin.version.mavencompiler}</version>
                 <configuration>
                     <source>9</source>
                     <target>9</target>
@@ -52,7 +80,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>${plugin.version.mavendependency}</version>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
@@ -71,7 +99,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>${plugin.version.mavenjavadoc}</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <show>package</show>
@@ -90,7 +118,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>${plugin.version.mavensource}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -104,7 +132,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>${plugin.version.mavengpg}</version>
                 <configuration>
                     <keyname>C4DDA755</keyname>
                 </configuration>
@@ -122,7 +150,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>${plugin.version.mavencheckstyle}</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
@@ -165,26 +193,29 @@
     </build>
 
     <dependencies>
+        <!-- Dependencies -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.4.1</version>
+            <version>${dependency.version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.10.0</version>
+            <version>${dependency.version.commontext}</version>
         </dependency>
+
+        <!-- Unit Tests -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <version>${dependency.version.junit}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.10.13</version>
+            <version>${dependency.version.jodatime}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
