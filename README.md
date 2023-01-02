@@ -1,8 +1,8 @@
 # Partialize
 
 
-[![Latest release](https://img.shields.io/badge/latest_release-21.12-orange.svg)](https://github.com/thibaultmeyer/partialize/releases)
-[![GitHub license](https://img.shields.io/badge/JitPack-21.12-green2.svg)](https://jitpack.io/#thibaultmeyer/partialize)
+[![Latest release](https://img.shields.io/badge/latest_release-23.01-orange.svg)](https://github.com/thibaultmeyer/partialize/releases)
+[![GitHub license](https://img.shields.io/badge/JitPack-23.01-green2.svg)](https://jitpack.io/#thibaultmeyer/partialize)
 [![Build](https://api.travis-ci.org/thibaultmeyer/partialize.svg)](https://travis-ci.org/thibaultmeyer/partialize)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/thibaultmeyer/partialize/master/LICENSE)
 [![Repository size](https://img.shields.io/github/repo-size/thibaultmeyer/partialize.svg?logo=git)](https://github.com/thibaultmeyer/partialize)
@@ -28,6 +28,25 @@ installed.
     #> mvn compile
     #> mvn package
 
+
+## Use Partialize in your project
+
+```xml
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+```
+
+```xml
+<dependency>
+  <groupId>com.github.thibaultmeyer</groupId>
+  <artifactId>partialize</artifactId>
+  <version>YY.MM</version>
+</dependency>
+```
 
 
 ## Query syntax
